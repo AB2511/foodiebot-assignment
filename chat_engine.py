@@ -101,6 +101,8 @@ def _parse_price(text: str):
 def calculate_interest_score(message: str, product_match: bool = True) -> int:
     m = (message or "").lower()
     score = 0
+
+    # Positive engagement factors
     if any(w in m for w in ["love", "spicy", "korean", "fusion", "burger", "pizza", "wrap"]):
         score += ENGAGEMENT_FACTORS["specific_preferences"]
     if "vegetarian" in m or "vegan" in m:
@@ -118,17 +120,25 @@ def calculate_interest_score(message: str, product_match: bool = True) -> int:
     if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS["order_intent"]
 
+    # Negative factors
     if any(w in m for w in ["maybe", "not sure"]):
         score += NEGATIVE_FACTORS["hesitation"]
     if "too expensive" in m:
         score += NEGATIVE_FACTORS["budget_concern"]
-    if not product_match and any(w in m for w in ["spicy", "vegetarian", "vegan", "burger", "pizza"]):
+    if not product_match and any(w in m for w in ["spicy", "vegetarian", "vegan", "burger", "pizza", "curry", "pasta"]):
+        # Stronger penalty if user asks for something but no match exists
         score += NEGATIVE_FACTORS["dietary_conflict"]
     if "don't like" in m or "not interested" in m:
         score += NEGATIVE_FACTORS["rejection"]
 
-    return max(0, min(100, int(round(score))))
+    # If no product matches at all, cap score based on positive engagement only
+    if not product_match:
+        # remove specific_preferences and dietary_restrictions if no match
+        for w in ["burger", "pizza", "wrap", "vegetarian", "vegan", "curry", "pasta"]:
+            if w in m:
+                score -= ENGAGEMENT_FACTORS.get("specific_preferences", 0) if w in ["burger", "pizza", "wrap", "curry", "pasta"] else ENGAGEMENT_FACTORS.get("dietary_restrictions", 0)
 
+    return max(0, min(100, int(round(score))))
 # ---------- DB query ----------
 def query_database(filters: dict):
     """
