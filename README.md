@@ -1,6 +1,7 @@
 # FoodieBot: Database-Driven Conversational Fast Food System
+A Python & Streamlit app that recommends fast food items from a 100-product database using AI-based interest scoring.
 
-This is my implementation for the Tecnvirons Pvt Ltd AI Food Agent Internship Assignment. Deadline: September 15, 2025. I used Gemini API as an alternative to Grok for data generation in Phase 1. The system analyzes conversations, calculates interest scores, and recommends from a 100-product database in real-time.
+This is my personal implementation of the Tecnvirons Pvt Ltd AI Food Agent Internship Assignment (deadline: September 15, 2025). It analyzes conversations, calculates interest scores, and provides real-time recommendations from a 100-product database.
 
 ## Assignment Overview
 Created an intelligent AI bot that works with pre-generated fast food data in SQLite. It analyzes user conversations, computes interest scores based on engagement factors (preferences, dietary, budget, mood, enthusiasm, order intent) and negative factors (rejection, no match), and provides real-time recommendations. Includes a Streamlit UI for chat and analytics.
