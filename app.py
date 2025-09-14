@@ -36,13 +36,13 @@ c.execute('''
     )
 ''')
 conn.commit()
-df = pd.read_sql_query("SELECT * FROM conversations", conn)
+df = pd.read_sql_query("SELECT * FROM conversations ORDER BY timestamp", conn)
 conn.close()
 
 if not df.empty:
     st.sidebar.write("Interest Progression Graph:")
     fig, ax = plt.subplots()
-    ax.plot(range(len(df['interest_score'])), df['interest_score'])  # Use turn index
+    ax.plot(df.index, df['interest_score'])  # Use index for turns
     ax.set_xlabel('Conversation Turns')
     ax.set_ylabel('Interest Score')
     st.sidebar.pyplot(fig)
