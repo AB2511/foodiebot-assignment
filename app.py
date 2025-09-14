@@ -36,7 +36,7 @@ c.execute('''
     )
 ''')
 conn.commit()
-df = pd.read_sql_query("SELECT * FROM conversations ORDER BY timestamp", conn)
+df = pd.read_sql_query("SELECT * FROM conversations ORDER BY id", conn)  # Use id for turn order
 conn.close()
 
 if not df.empty:
