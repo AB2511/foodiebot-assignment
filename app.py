@@ -1,5 +1,5 @@
 import streamlit as st
-from chat_engine import generate_response, log_conversation
+from chat_engine import generate_response, log_conversation, RULES
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
