@@ -4,7 +4,6 @@ import sqlite3
 import unicodedata
 from dotenv import load_dotenv
 
-# Optional: keep LLM config if you want to add model replies later.
 try:
     import google.generativeai as genai
     load_dotenv()
@@ -35,7 +34,6 @@ NEGATIVE_FACTORS = {
     "delay_response": -5,
 }
 
-# Normalized rules (singular/plural + DB categories)
 RULES = {
     "burger": {"category": "Burger"},
     "burgers": {"category": "Burger"},
@@ -50,7 +48,7 @@ RULES = {
     "spicy": {"spice_min": 5},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
-    # example DB categories — add more keys if needed
+   
     "classic burger": {"category": "Classic Burgers"},
     "fusion burger": {"category": "Fusion Burgers"},
     "vegetarian burger": {"category": "Vegetarian Burgers"},
@@ -71,15 +69,13 @@ RULES = {
     "appetizer": {"category": "Appetizer"},
 }
 
-# ---------- Helpers ----------
 def _clean_text(s: str) -> str:
     if not s:
         return ""
-    # normalize unicode, remove zero-width and control chars
     s = unicodedata.normalize("NFKC", str(s))
-    # remove zero-width spaces and FEFF
+   
     s = re.sub(r"[\u200B-\u200D\uFEFF]", "", s)
-    # remove other control characters except newline/tab
+ 
     s = "".join(ch for ch in s if ch.isprintable() or ch in "\n\t")
     return s.strip()
 
@@ -139,7 +135,6 @@ def calculate_interest_score(message: str, product_match: bool = True) -> int:
                 score -= ENGAGEMENT_FACTORS.get("specific_preferences", 0) if w in ["burger", "pizza", "wrap", "curry", "pasta"] else ENGAGEMENT_FACTORS.get("dietary_restrictions", 0)
 
     return max(0, min(100, int(round(score))))
-# ---------- DB query ----------
 def query_database(filters: dict):
     """
     Returns list of rows:
@@ -151,7 +146,7 @@ def query_database(filters: dict):
     conditions = []
     params = []
 
-    # category (LIKE)
+    # category LIKE
     if "category" in filters and filters["category"]:
         conditions.append("LOWER(category) LIKE ?")
         params.append(f"%{filters['category'].lower()}%")
@@ -178,7 +173,7 @@ def query_database(filters: dict):
             conditions.append("(LOWER(dietary_tags) LIKE ? OR LOWER(dietary_tags) LIKE ?)")
             params.extend(["%vegetarian%", "%vegan%"])
 
-    # keyword fallback (only if present). If the keyword was clearly a category term, we avoid repeating.
+    # keyword fallback 
     if "keyword" in filters and filters["keyword"]:
         kw = filters["keyword"].lower().strip()
         is_cat_like = any(k in kw and RULES[k].get("category") for k in RULES.keys())
@@ -208,7 +203,6 @@ def query_database(filters: dict):
         rows = []
     conn.close()
 
-    # sanitize fields
     cleaned = []
     for r in rows:
         cleaned.append((
@@ -222,7 +216,6 @@ def query_database(filters: dict):
         ))
     return cleaned
 
-# ---------- Generate response (constructs stable summary) ----------
 def generate_response(user_message: str, context: str = ""):
     """
     Returns: (bot_text, interest_int, results_list)
@@ -237,26 +230,22 @@ def generate_response(user_message: str, context: str = ""):
             filters.update(RULES[key])
             break
 
-    # price parsing
     price_val = _parse_price(user_message)
     if price_val is not None:
         filters["price_max"] = price_val
 
-    # always include keyword fallback
     filters["keyword"] = user_message
 
-    # fetch results
     results = query_database(filters)
     product_match = bool(results)
 
-    # interest score
     interest = calculate_interest_score(user_message, product_match)
 
-    # Build a clean, human-readable summary text (we do this in code to avoid LLM formatting issues)
+    # Build a clean summary text 
     if not results:
         bot_text = 'No matching products found in our database. What else can I help with?'
     else:
-        # group by category for nicer display
+        # group by category 
         by_cat = {}
         for row in results:
             pid, name, category, price, spice, desc, tags = row
@@ -274,10 +263,8 @@ def generate_response(user_message: str, context: str = ""):
                     lines.append(f"  {short_desc}")
         bot_text = "\n".join(lines)
 
-    # return bot_text, interest, structured results (so UI & logs can use structured data)
     return bot_text, interest, results
 
-# ---------- Log conversation ----------
 def log_conversation(user_message: str, response: str, interest: int):
     conn = sqlite3.connect("foodiebot.db")
     c = conn.cursor()
