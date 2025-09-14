@@ -29,23 +29,16 @@ NEGATIVE_FACTORS = {
     'delay_response': -5,
 }
 
-# ---------- Generic keyword → DB categories ----------
-GENERIC_CATEGORIES = {
-    "burger": ["Classic Burgers", "Fusion Burgers", "Vegetarian Burgers"],
-    "pizza": ["Personal Pizza", "Traditional Pizza", "Gourmet Pizza"],
-    "wrap": ["Wraps", "Tacos & Wraps"],
-    "taco": ["Tacos", "Tacos & Wraps"],
-    "salad": ["Salads & Healthy Options"],
-    "bowl": ["Bowl"],
-    "appetizer": ["Appetizer", "Sides & Appetizers"],
-    "sandwich": ["Sandwich", "Fried Chicken Sandwiches"],
-    "fried chicken wings": ["Fried Chicken Wings"],
-    "fried chicken tenders": ["Fried Chicken Tenders"],
-    "shake": ["Shake"],
-    "dessert": ["Dessert"],
-    "breakfast": ["Breakfast Items"],
-    "soda": ["Soda"],
-    "specialty drink": ["Specialty Drink"]
+# ---------- Keyword → DB rules ----------
+RULES = {
+    "burger": {"category": ["Classic Burgers", "Fusion Burgers", "Vegetarian Burgers"]},
+    "pizza": {"category": ["Personal Pizza", "Traditional Pizza", "Gourmet Pizza"]},
+    "wrap": {"category": ["Wraps"]},
+    "taco": {"category": ["Tacos & Wraps"]},
+    "salad": {"category": ["Salads & Healthy Options"]},
+    "spicy": {"spice_min": 5},
+    "vegetarian": {"dietary_tags": "vegetarian"},
+    "vegan": {"dietary_tags": "vegan"},
 }
 
 # ---------- Interest Score ----------
@@ -53,6 +46,7 @@ def calculate_interest_score(message, product_match=True):
     score = 0
     m = message.lower()
 
+    # Engagement
     if any(word in m for word in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in m or 'vegan' in m:
@@ -61,7 +55,7 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['budget_mention']
     if 'adventurous' in m:
         score += ENGAGEMENT_FACTORS['mood_indication']
-    if '?' in message:
+    if '?' in m:
         score += ENGAGEMENT_FACTORS['question_asking']
     if any(word in m for word in ['amazing', 'perfect', 'love']):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
@@ -70,6 +64,7 @@ def calculate_interest_score(message, product_match=True):
     if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
+    # Negative
     if any(word in m for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in m:
@@ -100,33 +95,31 @@ def query_database(filters):
         )""")
         params += [kw]*5
 
-    # Category options (generic keywords)
-    if 'category_options' in filters:
-        conditions.append("(" + " OR ".join("LOWER(category) LIKE ?" for _ in filters['category_options']) + ")")
-        params.extend([c.lower() for c in filters['category_options']])
+    # Category filter (handle multiple)
+    if 'category' in filters:
+        cats = filters['category']
+        if isinstance(cats, str):
+            cats = [cats]
+        category_conditions = []
+        for cat in cats:
+            category_conditions.append("LOWER(category) LIKE ?")
+            params.append(f"%{cat.lower()}%")
+        conditions.append("(" + " OR ".join(category_conditions) + ")")
 
-    # Price filter
+    # Max price
     if "price_max" in filters:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # Spice filter
+    # Spice
     if "spice_min" in filters:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # Dietary filter
+    # Dietary
     if "dietary_tags" in filters:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
-
-    # Context-aware vegetarian/vegan
-    if 'context' in filters and (
-        'vegetarian' in filters['context'].lower() or
-        'vegan' in filters['context'].lower()
-    ):
-        conditions.append("(dietary_tags LIKE ? OR dietary_tags LIKE ?)")
-        params.extend(['%vegetarian%', '%vegan%'])
 
     sql = """
         SELECT product_id, name, category, price, spice_level, description, dietary_tags
@@ -134,30 +127,25 @@ def query_database(filters):
     """
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
-
     sql += " ORDER BY popularity_score DESC LIMIT 5"
+
     results = c.execute(sql, params).fetchall()
     conn.close()
+
+    if not results:
+        print("[DEBUG] No DB matches with filters:", filters)
     return results
 
 # ---------- Generate Response ----------
 def generate_response(user_message, context=""):
     filters = {'context': context, 'keyword': user_message}
 
-    # Apply generic category options
-    for keyword, categories in GENERIC_CATEGORIES.items():
+    # Apply RULES
+    for keyword, rule in RULES.items():
         if keyword in user_message.lower():
-            filters['category_options'] = categories
+            filters.update(rule)
 
-    # Spice / dietary tags
-    if 'spicy' in user_message.lower():
-        filters['spice_min'] = 5
-    if 'vegetarian' in user_message.lower():
-        filters['dietary_tags'] = 'vegetarian'
-    if 'vegan' in user_message.lower():
-        filters['dietary_tags'] = 'vegan'
-
-    # Budget parsing
+    # Parse budget
     price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
     if not price_match:
         price_match = re.search(r'less than ([0-9]+\.?[0-9]*) ?dollars', user_message.lower())
@@ -168,7 +156,6 @@ def generate_response(user_message, context=""):
     product_match = bool(results)
     interest = calculate_interest_score(user_message, product_match)
 
-    # Build product info text
     if not results:
         product_info = "No matches found."
     else:
