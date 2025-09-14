@@ -43,7 +43,7 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
     if 'how much' in message.lower():
         score += ENGAGEMENT_FACTORS['price_inquiry']
-    # Enhanced order intent detection with debug
+    # Enhanced order intent detection
     if any(phrase in message.lower() for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
@@ -102,6 +102,7 @@ def generate_response(user_message, context=""):
 
     results = query_database(filters)
     product_match = bool(results)
+    interest = calculate_interest_score(user_message, product_match)  # Recalculate with match status
     if not results:
         product_info = "No matches found."
     else:
