@@ -43,7 +43,7 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
     if 'how much' in message.lower():
         score += ENGAGEMENT_FACTORS['price_inquiry']
-    # Enhanced order intent detection
+    # Enhanced order intent detection with debug
     if any(phrase in message.lower() for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
@@ -90,7 +90,6 @@ def generate_response(user_message, context=""):
     if 'spicy' in user_message.lower() or 'curry' in user_message.lower():
         filters['spice_min'] = 5
     if 'under $' in user_message.lower():
-        # Extract number after 'under $'
         for word in user_message.lower().split():
             if word.startswith('$'):
                 try:
