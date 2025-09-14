@@ -2,14 +2,22 @@
 import os
 import re
 import sqlite3
+import unicodedata
 from dotenv import load_dotenv
-import google.generativeai as genai
 
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Optional: keep LLM config if you want to add model replies later.
+try:
+    import google.generativeai as genai
+    load_dotenv()
+    if os.getenv("GEMINI_API_KEY"):
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        MODEL_AVAILABLE = True
+    else:
+        MODEL_AVAILABLE = False
+except Exception:
+    MODEL_AVAILABLE = False
 
-# Scoring constants
+# ---------- Scoring ----------
 ENGAGEMENT_FACTORS = {
     "specific_preferences": 15,
     "dietary_restrictions": 10,
@@ -28,9 +36,8 @@ NEGATIVE_FACTORS = {
     "delay_response": -5,
 }
 
-# Normalized keyword -> DB category/tag map (include plurals and DB categories)
+# Normalized rules (singular/plural + DB categories)
 RULES = {
-    # generic
     "burger": {"category": "Burger"},
     "burgers": {"category": "Burger"},
     "pizza": {"category": "Pizza"},
@@ -44,7 +51,7 @@ RULES = {
     "spicy": {"spice_min": 5},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
-    # specific DB categories (as seen in your DB)
+    # example DB categories — add more keys if needed
     "classic burger": {"category": "Classic Burgers"},
     "fusion burger": {"category": "Fusion Burgers"},
     "vegetarian burger": {"category": "Vegetarian Burgers"},
@@ -65,12 +72,23 @@ RULES = {
     "appetizer": {"category": "Appetizer"},
 }
 
-# ---------- Helper functions ----------
+# ---------- Helpers ----------
 def _clean_text(s: str) -> str:
-    return (s or "").lower().strip()
+    if not s:
+        return ""
+    # normalize unicode, remove zero-width and control chars
+    s = unicodedata.normalize("NFKC", str(s))
+    # remove zero-width spaces and FEFF
+    s = re.sub(r"[\u200B-\u200D\uFEFF]", "", s)
+    # remove other control characters except newline/tab
+    s = "".join(ch for ch in s if ch.isprintable() or ch in "\n\t")
+    return s.strip()
 
-def _parse_price(user_text: str):
-    t = user_text.lower()
+def _parse_price(text: str):
+    """Return float price if pattern found, else None. Supports 'under $X' and 'less than X dollars'."""
+    if not text:
+        return None
+    t = text.lower()
     m = re.search(r"under ?\$\s*([0-9]+(?:\.[0-9]+)?)", t)
     if not m:
         m = re.search(r"less than\s*([0-9]+(?:\.[0-9]+)?)\s*dollars?", t)
@@ -82,9 +100,8 @@ def _parse_price(user_text: str):
     return None
 
 def calculate_interest_score(message: str, product_match: bool = True) -> int:
-    m = _clean_text(message)
+    m = (message or "").lower()
     score = 0
-
     if any(w in m for w in ["love", "spicy", "korean", "fusion", "burger", "pizza", "wrap"]):
         score += ENGAGEMENT_FACTORS["specific_preferences"]
     if "vegetarian" in m or "vegan" in m:
@@ -102,7 +119,6 @@ def calculate_interest_score(message: str, product_match: bool = True) -> int:
     if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS["order_intent"]
 
-    # negatives
     if any(w in m for w in ["maybe", "not sure"]):
         score += NEGATIVE_FACTORS["hesitation"]
     if "too expensive" in m:
@@ -114,17 +130,11 @@ def calculate_interest_score(message: str, product_match: bool = True) -> int:
 
     return max(0, min(100, int(round(score))))
 
-# ---------- Database query ----------
+# ---------- DB query ----------
 def query_database(filters: dict):
     """
-    filters may contain:
-      - category (string) => will use LIKE '%category%'
-      - keyword (string) => fallback full-text LIKE search on name/description/tags
-      - spice_min (int)
-      - price_max (float)
-      - dietary_tags (string)
-      - context (string) optional
-    Returns list of rows (product_id, name, category, price, spice_level, description, dietary_tags).
+    Returns list of rows:
+    (product_id, name, category, price, spice_level, description, dietary_tags)
     """
     conn = sqlite3.connect("foodiebot.db")
     c = conn.cursor()
@@ -132,42 +142,37 @@ def query_database(filters: dict):
     conditions = []
     params = []
 
-    # If category present, prefer category match
+    # category (LIKE)
     if "category" in filters and filters["category"]:
         conditions.append("LOWER(category) LIKE ?")
         params.append(f"%{filters['category'].lower()}%")
 
-    # Price
+    # price
     if "price_max" in filters and filters["price_max"] is not None:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # Spice
+    # spice
     if "spice_min" in filters and filters["spice_min"] is not None:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # Dietary
+    # dietary_tags
     if "dietary_tags" in filters and filters["dietary_tags"]:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
 
-    # Context enforced vegetarian/vegan
+    # context enforced vegetarian/vegan
     if "context" in filters and filters["context"]:
         ctxt = filters["context"].lower()
         if "vegetarian" in ctxt or "vegan" in ctxt:
             conditions.append("(LOWER(dietary_tags) LIKE ? OR LOWER(dietary_tags) LIKE ?)")
             params.extend(["%vegetarian%", "%vegan%"])
 
-    # Keyword fallback (only if no stronger category filter or as additional filter)
+    # keyword fallback (only if present). If the keyword was clearly a category term, we avoid repeating.
     if "keyword" in filters and filters["keyword"]:
         kw = filters["keyword"].lower().strip()
-        # if keyword looks like a category (single word 'burgers' etc.) skip adding a generic clause
-        is_cat_like = False
-        for k in RULES.keys():
-            if k in kw and RULES[k].get("category"):
-                is_cat_like = True
-                break
+        is_cat_like = any(k in kw and RULES[k].get("category") for k in RULES.keys())
         if not is_cat_like:
             kw_like = f"%{kw}%"
             conditions.append("""(
@@ -185,88 +190,89 @@ def query_database(filters: dict):
     """
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
+    sql += " ORDER BY popularity_score DESC LIMIT 20"
 
-    sql += " ORDER BY popularity_score DESC LIMIT 10"
     try:
-        results = c.execute(sql, params).fetchall()
+        rows = c.execute(sql, params).fetchall()
     except Exception as e:
-        # debug print
-        print("SQL Error:", e, sql, params)
-        results = []
+        print("SQL ERROR:", e, sql, params)
+        rows = []
     conn.close()
-    return results
 
-# ---------- Generate response ----------
+    # sanitize fields
+    cleaned = []
+    for r in rows:
+        cleaned.append((
+            _clean_text(r[0]),
+            _clean_text(r[1]),
+            _clean_text(r[2]),
+            float(r[3]) if r[3] is not None else 0.0,
+            int(r[4]) if r[4] is not None else 0,
+            _clean_text(r[5]),
+            _clean_text(r[6]),
+        ))
+    return cleaned
+
+# ---------- Generate response (constructs stable summary) ----------
 def generate_response(user_message: str, context: str = ""):
     """
-    Returns: (bot_text_response, interest_score(int), results(list-of-rows))
-    results is the rows returned from query_database (so UI and LLM share same products).
+    Returns: (bot_text, interest_int, results_list)
+    results_list is the same rows returned from query_database
     """
-    m = _clean_text(user_message)
+    user_message = _clean_text(user_message)
     filters = {"context": context}
 
-    # 1) Try to detect explicit category/keywords using RULES (longer matches first)
-    sorted_keys = sorted(RULES.keys(), key=lambda x: -len(x))
-    for key in sorted_keys:
-        if key in m:
+    # try rule-based detection (longer keys first)
+    for key in sorted(RULES.keys(), key=lambda x: -len(x)):
+        if key in user_message:
             filters.update(RULES[key])
-            # prefer category match over generic keyword fallback
             break
 
-    # 2) price detection
-    price = _parse_price(user_message)
-    if price is not None:
-        filters["price_max"] = price
+    # price parsing
+    price_val = _parse_price(user_message)
+    if price_val is not None:
+        filters["price_max"] = price_val
 
-    # 3) if we didn't detect category/diet, always provide a keyword fallback
-    filters["keyword"] = user_message.strip()
+    # always include keyword fallback
+    filters["keyword"] = user_message
 
-    # 4) Query DB for real results (so both UI and prompt use them)
+    # fetch results
     results = query_database(filters)
     product_match = bool(results)
 
-    # 5) recalc interest after knowing if matches exist
+    # interest score
     interest = calculate_interest_score(user_message, product_match)
 
-    # 6) build strict product_info text for the LLM prompt (only the rows returned)
+    # Build a clean, human-readable summary text (we do this in code to avoid LLM formatting issues)
     if not results:
-        product_info = "No matches found."
+        bot_text = 'No matching products found in our database. What else can I help with?'
     else:
-        lines = []
-        for r in results[:8]:
-            # r: product_id, name, category, price, spice_level, description, dietary_tags
-            lines.append(f"- {r[1]} [{r[2]}]: ${r[3]:.2f}, Spice {r[4]}/10 - {r[5]} (Tags: {r[6]})")
-        product_info = "\n".join(lines)
+        # group by category for nicer display
+        by_cat = {}
+        for row in results:
+            pid, name, category, price, spice, desc, tags = row
+            by_cat.setdefault(category or "Other", []).append(row)
 
-    prompt = f"""
-You are FoodieBot. Use the following context: {context}
-User: {user_message}
+        lines = ["Here are the results from our database:"]
+        for cat in sorted(by_cat.keys()):
+            lines.append(f"\n{cat}:")
+            for r in by_cat[cat]:
+                _, name, _, price, spice, desc, tags = r
+                short_desc = (desc[:140] + "...") if desc and len(desc) > 140 else desc
+                tag_text = f" (Tags: {tags})" if tags else ""
+                lines.append(f"- {name} — ${price:.2f}, Spice {spice}/10{tag_text}")
+                if short_desc:
+                    lines.append(f"  {short_desc}")
+        bot_text = "\n".join(lines)
 
-Recommend ONLY from these database products (use only the names/lines below). If no matches, say exactly: "No matching products found in our database. What else can I help with?"
-{product_info}
+    # return bot_text, interest, structured results (so UI & logs can use structured data)
+    return bot_text, interest, results
 
-Respect user's dietary/budget/spice constraints. Do NOT invent products not listed above. Keep language natural and concise.
-"""
-    try:
-        response_text = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.6, "max_output_tokens": 300},
-        ).text
-    except Exception as e:
-        # If LLM fails, still return a fallback textual response so UI doesn't break
-        response_text = (
-            "Sorry — I'm temporarily unable to generate a natural response. "
-            + ("No matching products found in our database. What else can I help with?" if not product_match else product_info)
-        )
-
-    return response_text.strip(), interest, results
-
-# ---------- Logging ----------
+# ---------- Log conversation ----------
 def log_conversation(user_message: str, response: str, interest: int):
     conn = sqlite3.connect("foodiebot.db")
     c = conn.cursor()
-    c.execute(
-        """
+    c.execute("""
         CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_message TEXT,
@@ -274,11 +280,8 @@ def log_conversation(user_message: str, response: str, interest: int):
             interest_score INTEGER,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-        """
-    )
-    c.execute(
-        "INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
-        (user_message, response, int(interest)),
-    )
+    """)
+    c.execute("INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
+              (user_message, response, int(interest)))
     conn.commit()
     conn.close()
