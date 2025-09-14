@@ -1,0 +1,3141 @@
+{
+  "products": [
+    {
+      "product_id": "FF001",
+      "name": "Classic Cheeseburger",
+      "category": "Classic Burgers",
+      "description": "A juicy beef patty, melted cheddar cheese, crisp lettuce, juicy tomato, red onion, pickles, and our special sauce on a toasted sesame seed bun.",
+      "ingredients": [
+        "beef patty",
+        "cheddar cheese",
+        "lettuce",
+        "tomato",
+        "red onion",
+        "pickles",
+        "sesame seed bun",
+        "special sauce"
+      ],
+      "price": 8.99,
+      "calories": 650,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "comfort",
+        "classic"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A juicy cheeseburger with all the toppings in a tempting arrangement"
+    },
+    {
+      "product_id": "FF002",
+      "name": "Spicy Jalape\u00f1o Burger",
+      "category": "Fusion Burgers",
+      "description": "A fiery fusion of flavors! A charbroiled beef patty, pepper jack cheese, crispy jalape\u00f1os, chipotle mayo, and a mix of lettuce and tomato on a brioche bun.",
+      "ingredients": [
+        "beef patty",
+        "pepper jack cheese",
+        "jalape\u00f1os",
+        "chipotle mayo",
+        "lettuce",
+        "tomato",
+        "brioche bun"
+      ],
+      "price": 9.49,
+      "calories": 700,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "adventurous"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "A close-up shot of a burger with jalape\u00f1os, highlighting the spiciness"
+    },
+    {
+      "product_id": "FF003",
+      "name": "Mediterranean Veggie Burger",
+      "category": "Vegetarian Burgers",
+      "description": "A delightful vegetarian burger featuring a flavorful patty made from chickpeas, herbs, and spices, topped with hummus, feta cheese, cucumber, tomato, and olives on a whole wheat bun.",
+      "ingredients": [
+        "chickpea patty",
+        "hummus",
+        "feta cheese",
+        "cucumber",
+        "tomato",
+        "olives",
+        "whole wheat bun"
+      ],
+      "price": 7.99,
+      "calories": 450,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "fresh",
+        "healthy"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A vibrant veggie burger with fresh toppings on a rustic wooden board"
+    },
+    {
+      "product_id": "FF004",
+      "name": "Kimchi Bulgogi Burger",
+      "category": "Fusion Burgers",
+      "description": "A unique fusion of Korean flavors! Thinly sliced marinated bulgogi beef, kimchi, gochujang mayo, sesame seeds, and shredded carrots on a toasted brioche bun.",
+      "ingredients": [
+        "bulgogi beef",
+        "kimchi",
+        "gochujang mayo",
+        "sesame seeds",
+        "shredded carrots",
+        "brioche bun"
+      ],
+      "price": 10.99,
+      "calories": 600,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "exotic"
+      ],
+      "allergens": [
+        "gluten",
+        "soy"
+      ],
+      "popularity_score": 75,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "A mouth-watering burger with kimchi and bulgogi, showcasing the Korean-inspired flavors"
+    },
+    {
+      "product_id": "FF005",
+      "name": "Black Bean Avocado Burger",
+      "category": "Vegetarian Burgers",
+      "description": "A hearty vegetarian burger with a black bean patty, creamy avocado, crisp lettuce, tomato, and a zesty lime cilantro dressing on a whole wheat bun.",
+      "ingredients": [
+        "black bean patty",
+        "avocado",
+        "lettuce",
+        "tomato",
+        "lime cilantro dressing",
+        "whole wheat bun"
+      ],
+      "price": 8.49,
+      "calories": 550,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "fresh",
+        "healthy"
+      ],
+      "allergens": [
+        "gluten"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A visually appealing veggie burger with avocado slices and a vibrant dressing"
+    },
+    {
+      "product_id": "FF006",
+      "name": "Bacon Ranch Cheeseburger",
+      "category": "Classic Burgers",
+      "description": "A classic with a twist! Juicy beef patty, crispy bacon, cheddar cheese, creamy ranch dressing, lettuce, and tomato on a toasted sesame seed bun.",
+      "ingredients": [
+        "beef patty",
+        "bacon",
+        "cheddar cheese",
+        "ranch dressing",
+        "lettuce",
+        "tomato",
+        "sesame seed bun"
+      ],
+      "price": 9.99,
+      "calories": 750,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "comfort",
+        "indulgent"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A tempting cheeseburger with crispy bacon and creamy ranch dressing"
+    },
+    {
+      "product_id": "FF007",
+      "name": "Portobello Mushroom Swiss Burger",
+      "category": "Vegetarian Burgers",
+      "description": "A gourmet vegetarian burger featuring a large grilled portobello mushroom cap, melted Swiss cheese, caramelized onions, and a balsamic glaze on a multigrain bun.",
+      "ingredients": [
+        "portobello mushroom",
+        "Swiss cheese",
+        "caramelized onions",
+        "balsamic glaze",
+        "multigrain bun"
+      ],
+      "price": 10.49,
+      "calories": 500,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "sophisticated",
+        "elegant"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 72,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A sophisticated vegetarian burger with a balsamic glaze drizzle"
+    },
+    {
+      "product_id": "FF008",
+      "name": "Teriyaki Chicken Burger",
+      "category": "Fusion Burgers",
+      "description": "A delicious fusion of East and West! Grilled teriyaki chicken breast, teriyaki sauce, shredded lettuce, pickled ginger, and sesame seeds on a toasted brioche bun.",
+      "ingredients": [
+        "teriyaki chicken breast",
+        "teriyaki sauce",
+        "lettuce",
+        "pickled ginger",
+        "sesame seeds",
+        "brioche bun"
+      ],
+      "price": 9.49,
+      "calories": 620,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "savory",
+        "exotic"
+      ],
+      "allergens": [
+        "gluten",
+        "soy"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A flavorful teriyaki chicken burger with pickled ginger and sesame seeds"
+    },
+    {
+      "product_id": "FF009",
+      "name": "Buffalo Chicken Burger",
+      "category": "Fusion Burgers",
+      "description": "A spicy kick for your taste buds! Crispy buffalo chicken tenders, cheddar cheese, lettuce, tomato, and a creamy blue cheese dressing on a toasted brioche bun.",
+      "ingredients": [
+        "buffalo chicken tenders",
+        "cheddar cheese",
+        "lettuce",
+        "tomato",
+        "blue cheese dressing",
+        "brioche bun"
+      ],
+      "price": 11.99,
+      "calories": 800,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "satisfying"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 77,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 8,
+      "image_prompt": "A spicy buffalo chicken burger with a generous helping of blue cheese dressing"
+    },
+    {
+      "product_id": "FF010",
+      "name": "Falafel & Hummus Burger",
+      "category": "Vegetarian Burgers",
+      "description": "A Mediterranean delight! Crispy falafel balls, creamy hummus, chopped cucumber, tomato, and tahini sauce on a whole wheat bun.",
+      "ingredients": [
+        "falafel balls",
+        "hummus",
+        "cucumber",
+        "tomato",
+        "tahini sauce",
+        "whole wheat bun"
+      ],
+      "price": 7.49,
+      "calories": 400,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "fresh",
+        "light"
+      ],
+      "allergens": [
+        "gluten",
+        "sesame"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A refreshing vegetarian burger with falafel balls and hummus"
+    },
+    {
+      "product_id": "FF011",
+      "name": "Classic Margherita",
+      "category": "Traditional Pizza",
+      "description": "A timeless delight! San Marzano tomato sauce, fresh mozzarella, and fragrant basil atop our signature thin crust.",
+      "ingredients": [
+        "San Marzano tomatoes",
+        "mozzarella cheese",
+        "basil",
+        "pizza dough"
+      ],
+      "price": 8.99,
+      "calories": 450,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comfort",
+        "classic"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A rustic photo of a margherita pizza with melted mozzarella and fresh basil"
+    },
+    {
+      "product_id": "FF012",
+      "name": "Spicy Hawaiian BBQ",
+      "category": "Gourmet Pizza",
+      "description": "Sweet and spicy fusion! Grilled pineapple, savory ham, smoky BBQ sauce, and jalape\u00f1os on a crispy thin crust.",
+      "ingredients": [
+        "pineapple",
+        "ham",
+        "BBQ sauce",
+        "jalapenos",
+        "pizza dough"
+      ],
+      "price": 12.99,
+      "calories": 600,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "fun",
+        "adventurous"
+      ],
+      "allergens": [
+        "gluten"
+      ],
+      "popularity_score": 85,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "Close-up shot of a Hawaiian pizza with caramelized pineapple and spicy jalape\u00f1os"
+    },
+    {
+      "product_id": "FF013",
+      "name": "Veggie Supreme",
+      "category": "Traditional Pizza",
+      "description": "Load up on veggies! A colorful pizza with bell peppers, onions, mushrooms, olives, and spinach.",
+      "ingredients": [
+        "bell peppers",
+        "onions",
+        "mushrooms",
+        "olives",
+        "spinach",
+        "pizza dough",
+        "tomato sauce",
+        "mozzarella cheese"
+      ],
+      "price": 9.99,
+      "calories": 380,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A vibrant photo showcasing the variety of vegetables on the pizza"
+    },
+    {
+      "product_id": "FF014",
+      "name": "Mediterranean Delight",
+      "category": "Gourmet Pizza",
+      "description": "Taste of the Mediterranean! Feta cheese, sun-dried tomatoes, Kalamata olives, artichoke hearts, and oregano.",
+      "ingredients": [
+        "feta cheese",
+        "sun-dried tomatoes",
+        "kalamata olives",
+        "artichoke hearts",
+        "oregano",
+        "pizza dough"
+      ],
+      "price": 11.99,
+      "calories": 550,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "exotic",
+        "fresh"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A photo of the pizza highlighting the vibrant colors of the Mediterranean ingredients"
+    },
+    {
+      "product_id": "FF015",
+      "name": "Pepperoni Feast",
+      "category": "Traditional Pizza",
+      "description": "A classic favorite! Loads of pepperoni on a perfectly baked thin crust.",
+      "ingredients": [
+        "pepperoni",
+        "pizza dough",
+        "tomato sauce",
+        "mozzarella cheese"
+      ],
+      "price": 7.99,
+      "calories": 520,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "comfort",
+        "classic"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 95,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A close-up shot of a pizza with a generous amount of pepperoni"
+    },
+    {
+      "product_id": "FF016",
+      "name": "Chicken Pesto Primavera",
+      "category": "Gourmet Pizza",
+      "description": "Grilled chicken, fresh pesto, spring vegetables, and creamy mozzarella on a whole wheat crust.",
+      "ingredients": [
+        "grilled chicken",
+        "pesto",
+        "spring vegetables",
+        "mozzarella cheese",
+        "whole wheat pizza dough"
+      ],
+      "price": 13.99,
+      "calories": 650,
+      "prep_time": "15-18 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 75,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A gourmet-looking photo of the pizza with vibrant colors"
+    },
+    {
+      "product_id": "FF017",
+      "name": "Spicy Chorizo & Caramelized Onion",
+      "category": "Gourmet Pizza",
+      "description": "Spicy chorizo sausage with sweet caramelized onions on a thin crust. A fiery delight!",
+      "ingredients": [
+        "chorizo",
+        "caramelized onions",
+        "pizza dough",
+        "mozzarella cheese"
+      ],
+      "price": 10.99,
+      "calories": 580,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "flavorful"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 8,
+      "image_prompt": "A photo highlighting the texture and color of the chorizo and onions"
+    },
+    {
+      "product_id": "FF018",
+      "name": "Personal Cheese Pizza",
+      "category": "Personal Pizza",
+      "description": "A simple, classic personal cheese pizza, perfect for a quick and satisfying meal.",
+      "ingredients": [
+        "mozzarella cheese",
+        "pizza dough",
+        "tomato sauce"
+      ],
+      "price": 5.99,
+      "calories": 300,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comfort",
+        "simple"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 92,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A photo of a small, perfectly round cheese pizza"
+    },
+    {
+      "product_id": "FF019",
+      "name": "Personal Pepperoni Pizza",
+      "category": "Personal Pizza",
+      "description": "A mini version of our classic pepperoni pizza. Perfect for a quick bite!",
+      "ingredients": [
+        "pepperoni",
+        "pizza dough",
+        "tomato sauce",
+        "mozzarella cheese"
+      ],
+      "price": 6.99,
+      "calories": 350,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "comfort",
+        "quick"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A close up of a personal pepperoni pizza"
+    },
+    {
+      "product_id": "FF020",
+      "name": "Build Your Own Personal Pizza",
+      "category": "Personal Pizza",
+      "description": "Create your own masterpiece! Choose your favorite sauce, cheese, and toppings to make your perfect pizza.",
+      "ingredients": [
+        "various sauces",
+        "various cheeses",
+        "various toppings",
+        "pizza dough"
+      ],
+      "price": 7.99,
+      "calories": 400,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "creative",
+        "customizable"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy",
+        "various"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A photo of various pizza toppings arranged attractively"
+    },
+    {
+      "product_id": "FF021",
+      "name": "Classic Crispy Wings",
+      "category": "Fried Chicken Wings",
+      "description": "Six succulent, crispy fried chicken wings tossed in our signature buffalo sauce. Served with celery sticks and your choice of ranch or blue cheese dressing.",
+      "ingredients": [
+        "chicken wings",
+        "buffalo sauce",
+        "flour",
+        "celery",
+        "ranch dressing",
+        "blue cheese dressing"
+      ],
+      "price": 8.99,
+      "calories": 650,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "comfort",
+        "gameday"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "Close-up shot of six golden-brown chicken wings, glistening with buffalo sauce, arranged on a white plate with celery and dressing containers."
+    },
+    {
+      "product_id": "FF022",
+      "name": "Spicy Korean Fried Chicken Tenders",
+      "category": "Fried Chicken Tenders",
+      "description": "Five extra crispy chicken tenders marinated in a sweet and spicy Korean gochujang sauce.  Garnished with sesame seeds and green onions.",
+      "ingredients": [
+        "chicken tenders",
+        "gochujang sauce",
+        "soy sauce",
+        "sesame seeds",
+        "green onions",
+        "flour"
+      ],
+      "price": 9.49,
+      "calories": 580,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "fusion"
+      ],
+      "allergens": [
+        "soy",
+        "gluten"
+      ],
+      "popularity_score": 85,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "A vibrant photo of five glistening Korean fried chicken tenders, garnished with sesame seeds and green onions, on a rustic wooden board."
+    },
+    {
+      "product_id": "FF023",
+      "name": "Nashville Hot Chicken Sandwich",
+      "category": "Fried Chicken Sandwiches",
+      "description": "Juicy fried chicken breast, marinated in a fiery Nashville hot sauce, served on a brioche bun with pickles and slaw.",
+      "ingredients": [
+        "chicken breast",
+        "nashville hot sauce",
+        "brioche bun",
+        "pickles",
+        "coleslaw"
+      ],
+      "price": 10.99,
+      "calories": 780,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "comfort"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 92,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 9,
+      "image_prompt": "A mouthwatering close-up of a Nashville Hot Chicken sandwich with overflowing hot sauce, pickles, and slaw, on a rustic wooden table."
+    },
+    {
+      "product_id": "FF024",
+      "name": "Honey Garlic Glazed Wings",
+      "category": "Fried Chicken Wings",
+      "description": "Six crispy chicken wings tossed in a sweet and savory honey garlic glaze.  Served with a side of steamed rice.",
+      "ingredients": [
+        "chicken wings",
+        "honey",
+        "garlic",
+        "soy sauce",
+        "rice"
+      ],
+      "price": 7.99,
+      "calories": 600,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "sweet",
+        "comfort"
+      ],
+      "allergens": [
+        "soy",
+        "gluten"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A tempting photo of honey garlic glazed chicken wings, glistening with glaze, served alongside a small bowl of steamed rice."
+    },
+    {
+      "product_id": "FF025",
+      "name": "Lemon Herb Chicken Tenders",
+      "category": "Fried Chicken Tenders",
+      "description": "Five lightly breaded chicken tenders seasoned with lemon, herbs, and a touch of garlic. A healthier option!",
+      "ingredients": [
+        "chicken tenders",
+        "lemon",
+        "herbs",
+        "garlic",
+        "breadcrumbs"
+      ],
+      "price": 6.49,
+      "calories": 350,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "light",
+        "healthy"
+      ],
+      "allergens": [
+        "gluten"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A photo of five lightly golden-brown lemon herb chicken tenders on a bed of fresh lettuce, showcasing their light and crispy texture."
+    },
+    {
+      "product_id": "FF026",
+      "name": "BBQ Ranch Chicken Sandwich",
+      "category": "Fried Chicken Sandwiches",
+      "description": "Crispy fried chicken breast slathered in BBQ sauce and creamy ranch dressing, served on a toasted bun with lettuce and tomato.",
+      "ingredients": [
+        "chicken breast",
+        "bbq sauce",
+        "ranch dressing",
+        "bun",
+        "lettuce",
+        "tomato"
+      ],
+      "price": 9.99,
+      "calories": 720,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "classic",
+        "comfort"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A close-up shot of a BBQ Ranch Chicken sandwich, showcasing the juicy chicken, BBQ sauce, ranch dressing, lettuce, and tomato on a toasted bun."
+    },
+    {
+      "product_id": "FF027",
+      "name": "Buffalo Cauliflower Wings",
+      "category": "Fried Chicken Wings",
+      "description": "Crispy cauliflower florets tossed in our signature buffalo sauce. A vegetarian alternative to our classic wings!",
+      "ingredients": [
+        "cauliflower",
+        "buffalo sauce",
+        "flour",
+        "celery",
+        "ranch dressing"
+      ],
+      "price": 7.49,
+      "calories": 400,
+      "prep_time": "9-11 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "spicy"
+      ],
+      "mood_tags": [
+        "comfort",
+        "plantbased"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "A picture of crispy buffalo cauliflower wings arranged on a plate with celery and ranch dressing, highlighting the texture and vibrant color."
+    },
+    {
+      "product_id": "FF028",
+      "name": "Sweet Chili Chicken Tenders",
+      "category": "Fried Chicken Tenders",
+      "description": "Five crispy chicken tenders tossed in a sweet and tangy sweet chili sauce. Served with a side of rice.",
+      "ingredients": [
+        "chicken tenders",
+        "sweet chili sauce",
+        "rice"
+      ],
+      "price": 8.49,
+      "calories": 550,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "sweet",
+        "savory"
+      ],
+      "allergens": [
+        "gluten",
+        "soy"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 4,
+      "image_prompt": "A photo of sweet chili chicken tenders, glistening with sauce, served with a side of rice, highlighting the vibrant color of the sauce."
+    },
+    {
+      "product_id": "FF029",
+      "name": "Chipotle Lime Chicken Sandwich",
+      "category": "Fried Chicken Sandwiches",
+      "description": "Marinated in chipotle peppers and lime juice, this crispy chicken sandwich is served on a toasted bun with avocado and cilantro.",
+      "ingredients": [
+        "chicken breast",
+        "chipotle peppers",
+        "lime juice",
+        "bun",
+        "avocado",
+        "cilantro"
+      ],
+      "price": 11.49,
+      "calories": 680,
+      "prep_time": "11-13 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "zesty",
+        "fusion"
+      ],
+      "allergens": [
+        "gluten"
+      ],
+      "popularity_score": 87,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 5,
+      "image_prompt": "A close-up of a Chipotle Lime Chicken sandwich, showcasing the vibrant green cilantro and avocado against the crispy chicken and toasted bun."
+    },
+    {
+      "product_id": "FF030",
+      "name": "General Tso's Chicken Sandwich",
+      "category": "Fried Chicken Sandwiches",
+      "description": "Crispy fried chicken breast tossed in our homemade General Tso's sauce, served on a toasted bun with sesame seeds and green onions.",
+      "ingredients": [
+        "chicken breast",
+        "general tso's sauce",
+        "bun",
+        "sesame seeds",
+        "green onions"
+      ],
+      "price": 12.99,
+      "calories": 750,
+      "prep_time": "12-14 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "fusion"
+      ],
+      "allergens": [
+        "gluten",
+        "soy"
+      ],
+      "popularity_score": 95,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 8,
+      "image_prompt": "A mouthwatering close-up of a General Tso's Chicken Sandwich, showcasing the glistening sauce, sesame seeds, and green onions on a toasted bun."
+    },
+    {
+      "product_id": "FF031",
+      "name": "Classic Ground Beef Taco",
+      "category": "Tacos & Wraps",
+      "description": "A timeless favorite! Seasoned ground beef, crisp lettuce, diced tomatoes, shredded cheddar cheese, and our signature taco sauce all nestled in a warm corn tortilla.",
+      "ingredients": [
+        "ground beef",
+        "corn tortillas",
+        "lettuce",
+        "tomatoes",
+        "cheddar cheese",
+        "taco sauce"
+      ],
+      "price": 6.99,
+      "calories": 450,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "comfort",
+        "classic"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A close-up shot of a juicy ground beef taco with all the fixings, garnished with fresh cilantro"
+    },
+    {
+      "product_id": "FF032",
+      "name": "Spicy Korean BBQ Chicken Taco",
+      "category": "Tacos & Wraps",
+      "description": "Sweet and spicy Korean BBQ chicken, kimchi slaw, and a drizzle of gochujang mayo in a warm flour tortilla. A flavor explosion!",
+      "ingredients": [
+        "chicken",
+        "korean bbq sauce",
+        "kimchi",
+        "mayonnaise",
+        "flour tortillas",
+        "gochujang"
+      ],
+      "price": 8.99,
+      "calories": 550,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "savory"
+      ],
+      "allergens": [
+        "soy",
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "A vibrant image of a Korean BBQ chicken taco with kimchi slaw, drizzled with gochujang mayo"
+    },
+    {
+      "product_id": "FF033",
+      "name": "Chipotle Black Bean Wrap",
+      "category": "Tacos & Wraps",
+      "description": "A hearty vegetarian wrap filled with chipotle-seasoned black beans, roasted corn, bell peppers, avocado crema, and a sprinkle of cotija cheese in a whole-wheat tortilla.",
+      "ingredients": [
+        "black beans",
+        "chipotle peppers",
+        "corn",
+        "bell peppers",
+        "avocado",
+        "cotija cheese",
+        "whole wheat tortilla"
+      ],
+      "price": 7.49,
+      "calories": 380,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "dairy",
+        "tree nuts"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A delicious photo of a chipotle black bean wrap, showcasing the colorful ingredients"
+    },
+    {
+      "product_id": "FF034",
+      "name": "Mediterranean Quinoa Taco Bowl",
+      "category": "Tacos & Wraps",
+      "description": "A healthy and flavorful bowl featuring fluffy quinoa, grilled halloumi cheese, cucumber, tomatoes, Kalamata olives, and a lemon-herb vinaigrette.",
+      "ingredients": [
+        "quinoa",
+        "halloumi cheese",
+        "cucumber",
+        "tomatoes",
+        "kalamata olives",
+        "lemon-herb vinaigrette"
+      ],
+      "price": 9.99,
+      "calories": 400,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "healthy",
+        "refreshing"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A healthy and vibrant photo of the Mediterranean Quinoa Taco Bowl"
+    },
+    {
+      "product_id": "FF035",
+      "name": "Carnitas Taco Salad",
+      "category": "Tacos & Wraps",
+      "description": "Slow-cooked carnitas, crisp romaine lettuce, pico de gallo, crunchy tortilla strips, and a creamy cilantro-lime dressing.",
+      "ingredients": [
+        "pork carnitas",
+        "romaine lettuce",
+        "pico de gallo",
+        "tortilla strips",
+        "cilantro-lime dressing"
+      ],
+      "price": 10.99,
+      "calories": 600,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "satisfying",
+        "flavorful"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 88,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 4,
+      "image_prompt": "A mouth-watering image of the Carnitas Taco Salad, highlighting the textures and colors"
+    },
+    {
+      "product_id": "FF036",
+      "name": "Cajun Shrimp Taco",
+      "category": "Tacos & Wraps",
+      "description": "Spicy Cajun shrimp, shredded cabbage, mango salsa, and a chipotle aioli in a warm flour tortilla.",
+      "ingredients": [
+        "shrimp",
+        "cajun seasoning",
+        "cabbage",
+        "mango salsa",
+        "chipotle aioli",
+        "flour tortillas"
+      ],
+      "price": 11.49,
+      "calories": 520,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "zesty",
+        "vibrant"
+      ],
+      "allergens": [
+        "dairy",
+        "soy"
+      ],
+      "popularity_score": 72,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 6,
+      "image_prompt": "An appetizing photo of the Cajun Shrimp Taco, showcasing the vibrant colors of the ingredients"
+    },
+    {
+      "product_id": "FF037",
+      "name": "Buffalo Chicken Wrap",
+      "category": "Tacos & Wraps",
+      "description": "Tender chicken tossed in spicy buffalo sauce, creamy ranch dressing, crumbled blue cheese, and crisp celery in a large flour tortilla.",
+      "ingredients": [
+        "chicken",
+        "buffalo sauce",
+        "ranch dressing",
+        "blue cheese",
+        "celery",
+        "flour tortillas"
+      ],
+      "price": 9.49,
+      "calories": 700,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "comfort",
+        "satisfying"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 8,
+      "image_prompt": "A drool-worthy photo of the Buffalo Chicken Wrap, showcasing the layers of flavor"
+    },
+    {
+      "product_id": "FF038",
+      "name": "Falafel & Hummus Wrap",
+      "category": "Tacos & Wraps",
+      "description": "A flavorful vegetarian wrap with crispy falafel balls, creamy hummus, chopped tomatoes, cucumbers, and a drizzle of tahini sauce.",
+      "ingredients": [
+        "falafel",
+        "hummus",
+        "tomatoes",
+        "cucumbers",
+        "tahini sauce",
+        "whole wheat tortilla"
+      ],
+      "price": 7.99,
+      "calories": 480,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "healthy",
+        "refreshing"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A fresh and inviting photo of the Falafel & Hummus Wrap"
+    },
+    {
+      "product_id": "FF039",
+      "name": "Grilled Portobello Mushroom Taco",
+      "category": "Tacos & Wraps",
+      "description": "Large grilled portobello mushrooms marinated in a smoky chipotle glaze, topped with caramelized onions, roasted red peppers, and a sprinkle of cotija cheese.",
+      "ingredients": [
+        "portobello mushrooms",
+        "chipotle glaze",
+        "caramelized onions",
+        "roasted red peppers",
+        "cotija cheese",
+        "corn tortillas"
+      ],
+      "price": 8.49,
+      "calories": 350,
+      "prep_time": "9-11 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "earthy",
+        "savory"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 77,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A mouth-watering image of the Grilled Portobello Mushroom Taco, highlighting the smoky glaze and colorful toppings"
+    },
+    {
+      "product_id": "FF040",
+      "name": "Pulled Pork & Pineapple Taco",
+      "category": "Tacos & Wraps",
+      "description": "Sweet and savory pulled pork with grilled pineapple, a spicy mango salsa, and a drizzle of chipotle crema in a warm flour tortilla.",
+      "ingredients": [
+        "pulled pork",
+        "pineapple",
+        "mango salsa",
+        "chipotle crema",
+        "flour tortillas"
+      ],
+      "price": 12.99,
+      "calories": 650,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "sweet",
+        "savory"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 83,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 5,
+      "image_prompt": "A delicious photo of the Pulled Pork & Pineapple Taco, showcasing the combination of sweet and spicy flavors"
+    },
+    {
+      "product_id": "FF041",
+      "name": "Spicy Korean Fried Cauliflower",
+      "category": "Sides & Appetizers",
+      "description": "Crispy cauliflower florets tossed in a sweet and spicy Korean gochujang sauce, garnished with sesame seeds and green onions.",
+      "ingredients": [
+        "cauliflower",
+        "gochujang sauce",
+        "sesame seeds",
+        "green onions"
+      ],
+      "price": 8.99,
+      "calories": 450,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "bold"
+      ],
+      "allergens": [
+        "soy",
+        "sesame"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "A close-up shot of spicy Korean fried cauliflower, showing its texture and vibrant color"
+    },
+    {
+      "product_id": "FF042",
+      "name": "Sweet Potato Fries with Chipotle Mayo",
+      "category": "Sides & Appetizers",
+      "description": "Thick-cut sweet potato fries seasoned with smoked paprika and served with a creamy chipotle mayo dipping sauce.",
+      "ingredients": [
+        "sweet potatoes",
+        "smoked paprika",
+        "chipotle mayo"
+      ],
+      "price": 7.49,
+      "calories": 600,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comfort",
+        "sweet"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A basket of golden sweet potato fries with a small bowl of chipotle mayo on the side"
+    },
+    {
+      "product_id": "FF043",
+      "name": "Loaded Waffle Fries",
+      "category": "Sides & Appetizers",
+      "description": "Crispy waffle fries piled high with cheddar cheese sauce, bacon bits, green onions, and a drizzle of ranch dressing.",
+      "ingredients": [
+        "waffle fries",
+        "cheddar cheese sauce",
+        "bacon bits",
+        "green onions",
+        "ranch dressing"
+      ],
+      "price": 10.99,
+      "calories": 850,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "dairy"
+      ],
+      "mood_tags": [
+        "comfort",
+        "indulgent"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A plate of loaded waffle fries with all the toppings visible"
+    },
+    {
+      "product_id": "FF044",
+      "name": "Jalape\u00f1o Popper Bites",
+      "category": "Sides & Appetizers",
+      "description": "Crispy fried jalape\u00f1o peppers stuffed with cream cheese and cheddar cheese, served with a side of marinara sauce.",
+      "ingredients": [
+        "jalape\u00f1os",
+        "cream cheese",
+        "cheddar cheese",
+        "marinara sauce"
+      ],
+      "price": 6.99,
+      "calories": 350,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "spicy",
+        "fun"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "A plate of jalape\u00f1o popper bites with a side of marinara sauce"
+    },
+    {
+      "product_id": "FF045",
+      "name": "Onion Ring Stackers",
+      "category": "Sides & Appetizers",
+      "description": "Large, crispy onion rings stacked high and served with a choice of dipping sauce (BBQ, ranch, or honey mustard).",
+      "ingredients": [
+        "onions",
+        "batter",
+        "bbq sauce",
+        "ranch dressing",
+        "honey mustard"
+      ],
+      "price": 9.49,
+      "calories": 700,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "classic",
+        "comfort"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 92,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A tall stack of crispy onion rings with various dipping sauces"
+    },
+    {
+      "product_id": "FF046",
+      "name": "Garlic Parmesan Tots",
+      "category": "Sides & Appetizers",
+      "description": "Crispy tater tots tossed in a flavorful garlic parmesan seasoning.",
+      "ingredients": [
+        "potatoes",
+        "garlic powder",
+        "parmesan cheese"
+      ],
+      "price": 5.99,
+      "calories": 400,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "classic",
+        "savory"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A basket of golden garlic parmesan tater tots"
+    },
+    {
+      "product_id": "FF047",
+      "name": "Mediterranean Quinoa Salad",
+      "category": "Sides & Appetizers",
+      "description": "A refreshing quinoa salad with cucumbers, tomatoes, olives, feta cheese, and a lemon-herb vinaigrette.",
+      "ingredients": [
+        "quinoa",
+        "cucumbers",
+        "tomatoes",
+        "olives",
+        "feta cheese",
+        "lemon-herb vinaigrette"
+      ],
+      "price": 7.99,
+      "calories": 300,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A colorful bowl of Mediterranean quinoa salad"
+    },
+    {
+      "product_id": "FF048",
+      "name": "Mac and Cheese Bites",
+      "category": "Sides & Appetizers",
+      "description": "Crispy fried mac and cheese balls served with a side of marinara sauce for dipping.",
+      "ingredients": [
+        "pasta",
+        "cheese sauce",
+        "breadcrumbs",
+        "marinara sauce"
+      ],
+      "price": 6.49,
+      "calories": 550,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comfort",
+        "cheesy"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 70,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A plate of golden mac and cheese bites with a side of marinara sauce"
+    },
+    {
+      "product_id": "FF049",
+      "name": "Buffalo Chicken Tenders",
+      "category": "Sides & Appetizers",
+      "description": "Crispy chicken tenders tossed in a spicy buffalo sauce, served with celery sticks and your choice of ranch or blue cheese dressing.",
+      "ingredients": [
+        "chicken",
+        "buffalo sauce",
+        "celery sticks",
+        "ranch dressing",
+        "blue cheese dressing"
+      ],
+      "price": 11.49,
+      "calories": 750,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "comfort"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 95,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 8,
+      "image_prompt": "A plate of buffalo chicken tenders with celery sticks and dipping sauces"
+    },
+    {
+      "product_id": "FF050",
+      "name": "Spinach and Artichoke Dip with Chips",
+      "category": "Sides & Appetizers",
+      "description": "Creamy spinach and artichoke dip served with a generous portion of tortilla chips.",
+      "ingredients": [
+        "spinach",
+        "artichoke hearts",
+        "cream cheese",
+        "tortilla chips"
+      ],
+      "price": 8.49,
+      "calories": 650,
+      "prep_time": "10-15 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comfort",
+        "creamy"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A warm bowl of spinach and artichoke dip with a pile of tortilla chips"
+    },
+    {
+      "product_id": "FF051",
+      "name": "Berry Blast Fusion",
+      "category": "Specialty Drink",
+      "description": "A vibrant fusion of mixed berries, creamy coconut milk, and a hint of lime. Topped with a sprinkle of granola for added crunch.",
+      "ingredients": [
+        "Mixed Berries",
+        "Coconut Milk",
+        "Lime Juice",
+        "Granola"
+      ],
+      "price": 8.99,
+      "calories": 450,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "tropical"
+      ],
+      "allergens": [
+        "nuts"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 0,
+      "image_prompt": "A close-up shot of a pink and purple smoothie with granola topping, in a tall glass with a straw"
+    },
+    {
+      "product_id": "FF052",
+      "name": "Classic Cola",
+      "category": "Soda",
+      "description": "The quintessential cola experience \u2013 crisp, refreshing, and undeniably satisfying.  A timeless beverage for any occasion.",
+      "ingredients": [
+        "Carbonated Water",
+        "Sugar",
+        "Cola Syrup",
+        "Caramel Color"
+      ],
+      "price": 2.5,
+      "calories": 250,
+      "prep_time": "1 min",
+      "dietary_tags": [],
+      "mood_tags": [
+        "classic",
+        "refreshing"
+      ],
+      "allergens": [],
+      "popularity_score": 95,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "An ice-cold bottle of cola with condensation"
+    },
+    {
+      "product_id": "FF053",
+      "name": "Spicy Mango Tango",
+      "category": "Specialty Drink",
+      "description": "A fiery fusion of sweet mango puree, chili flakes, and a touch of ginger. A taste bud adventure for the brave.",
+      "ingredients": [
+        "Mango Puree",
+        "Chili Flakes",
+        "Ginger",
+        "Lime Juice"
+      ],
+      "price": 7.99,
+      "calories": 380,
+      "prep_time": "5 mins",
+      "dietary_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "spicy",
+        "exotic"
+      ],
+      "allergens": [],
+      "popularity_score": 70,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 7,
+      "image_prompt": "A vibrant orange smoothie with chili flakes sprinkled on top"
+    },
+    {
+      "product_id": "FF054",
+      "name": "Vanilla Bean Dream Shake",
+      "category": "Shake",
+      "description": "Indulge in the creamy perfection of our vanilla bean dream shake. Made with real vanilla beans and a touch of Madagascar bourbon vanilla extract.",
+      "ingredients": [
+        "Vanilla Ice Cream",
+        "Milk",
+        "Vanilla Bean Paste",
+        "Madagascar Bourbon Vanilla Extract"
+      ],
+      "price": 6.99,
+      "calories": 650,
+      "prep_time": "3 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "sweet",
+        "comforting"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A thick, creamy vanilla milkshake in a tall glass with whipped cream"
+    },
+    {
+      "product_id": "FF055",
+      "name": "Strawberry Kiwi Refresher",
+      "category": "Specialty Drink",
+      "description": "A light and refreshing blend of sweet strawberries and tangy kiwi, perfect for a summer day.",
+      "ingredients": [
+        "Strawberries",
+        "Kiwi",
+        "Lemon Juice",
+        "Water"
+      ],
+      "price": 5.99,
+      "calories": 280,
+      "prep_time": "3 mins",
+      "dietary_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "summery"
+      ],
+      "allergens": [],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 0,
+      "image_prompt": "A glass of pink and green blended drink with fresh strawberries and kiwi slices"
+    },
+    {
+      "product_id": "FF056",
+      "name": "Chocolate Mint Madness",
+      "category": "Shake",
+      "description": "A decadent blend of rich chocolate and refreshing mint, creating a truly unforgettable flavor combination.",
+      "ingredients": [
+        "Chocolate Ice Cream",
+        "Mint Extract",
+        "Milk",
+        "Chocolate Syrup"
+      ],
+      "price": 7.49,
+      "calories": 700,
+      "prep_time": "3 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "sweet",
+        "indulgent"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A thick chocolate milkshake with mint leaves and chocolate shavings"
+    },
+    {
+      "product_id": "FF057",
+      "name": "Orange Creamsicle Soda",
+      "category": "Soda",
+      "description": "A nostalgic twist on a classic.  This creamy orange soda captures the essence of a summer creamsicle.",
+      "ingredients": [
+        "Carbonated Water",
+        "Orange Syrup",
+        "Cream",
+        "Vanilla Extract"
+      ],
+      "price": 4.99,
+      "calories": 350,
+      "prep_time": "1 min",
+      "dietary_tags": [],
+      "mood_tags": [
+        "nostalgic",
+        "refreshing"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "An orange-colored soda with a creamy texture in a glass with ice"
+    },
+    {
+      "product_id": "FF058",
+      "name": "Pineapple Ginger Fizz",
+      "category": "Specialty Drink",
+      "description": "A zesty blend of sweet pineapple and spicy ginger, offering a refreshing and invigorating experience.",
+      "ingredients": [
+        "Pineapple Juice",
+        "Ginger",
+        "Lime Juice",
+        "Sparkling Water"
+      ],
+      "price": 6.49,
+      "calories": 300,
+      "prep_time": "4 mins",
+      "dietary_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "zesty"
+      ],
+      "allergens": [],
+      "popularity_score": 80,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A glass of yellow fizzy drink with pineapple wedges and ginger slices"
+    },
+    {
+      "product_id": "FF059",
+      "name": "Black Cherry Vanilla Shake",
+      "category": "Shake",
+      "description": "A rich and decadent shake blending the tartness of black cherries with the sweetness of vanilla.",
+      "ingredients": [
+        "Vanilla Ice Cream",
+        "Black Cherry Syrup",
+        "Milk",
+        "Whipped Cream"
+      ],
+      "price": 7.99,
+      "calories": 600,
+      "prep_time": "3 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "sweet",
+        "rich"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 92,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A dark purple shake with whipped cream on top"
+    },
+    {
+      "product_id": "FF060",
+      "name": "Green Tea Matcha Latte",
+      "category": "Specialty Drink",
+      "description": "A subtly sweet and refreshing matcha latte, perfect for a midday pick-me-up or a calming evening treat.",
+      "ingredients": [
+        "Matcha Powder",
+        "Milk",
+        "Sugar",
+        "Ice"
+      ],
+      "price": 5.49,
+      "calories": 320,
+      "prep_time": "4 mins",
+      "dietary_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "calming",
+        "refreshing"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A green matcha latte with frothed milk"
+    },
+    {
+      "product_id": "FF061",
+      "name": "Matcha White Chocolate Chunk Cookie",
+      "category": "Dessert",
+      "description": "A delightful fusion of Japanese and Western flavors.  Imagine a warm, gooey cookie studded with chunks of creamy white chocolate and infused with the subtle, earthy bitterness of matcha.",
+      "ingredients": [
+        "flour",
+        "matcha powder",
+        "white chocolate",
+        "butter",
+        "sugar"
+      ],
+      "price": 6.99,
+      "calories": 450,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "calm",
+        "comfort"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A close-up shot of a warm matcha white chocolate chunk cookie, highlighting the green matcha and white chocolate chunks"
+    },
+    {
+      "product_id": "FF062",
+      "name": "Salted Caramel Brownie Ice Cream Sundae",
+      "category": "Dessert",
+      "description": "Indulge in a decadent sundae featuring our rich, fudgy brownie layered with creamy salted caramel ice cream, finished with a drizzle of more salted caramel and a sprinkle of sea salt.",
+      "ingredients": [
+        "brownie",
+        "salted caramel ice cream",
+        "caramel sauce",
+        "sea salt"
+      ],
+      "price": 8.99,
+      "calories": 700,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "indulgent",
+        "comfort"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 92,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A visually appealing photo of a Salted Caramel Brownie Ice Cream Sundae, showing layers and toppings clearly"
+    },
+    {
+      "product_id": "FF063",
+      "name": "Mini Churro Bites with Chocolate Sauce",
+      "category": "Dessert",
+      "description": "Crispy, cinnamon-sugar coated churro bites, perfect for sharing (or not!). Served with a rich, decadent chocolate dipping sauce.",
+      "ingredients": [
+        "churro dough",
+        "cinnamon sugar",
+        "chocolate sauce"
+      ],
+      "price": 5.99,
+      "calories": 380,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "fun",
+        "sweet"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A vibrant image of mini churro bites arranged artfully, with a small bowl of chocolate sauce beside them"
+    },
+    {
+      "product_id": "FF064",
+      "name": "Berry Greek Yogurt Parfait",
+      "category": "Dessert",
+      "description": "A lighter, refreshing dessert option. Layers of creamy Greek yogurt, fresh berries, and a crunchy granola topping make this a guilt-free indulgence.",
+      "ingredients": [
+        "greek yogurt",
+        "mixed berries",
+        "granola"
+      ],
+      "price": 7.49,
+      "calories": 300,
+      "prep_time": "3-5 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "healthy",
+        "refreshing"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 65,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A bright, clean photo of a layered berry Greek yogurt parfait in a clear glass"
+    },
+    {
+      "product_id": "FF065",
+      "name": "Spicy Mango Sticky Rice",
+      "category": "Dessert",
+      "description": "A unique twist on a classic Thai dessert. Sweet sticky rice infused with a hint of chili flakes, topped with fresh mango slices and coconut milk.",
+      "ingredients": [
+        "sticky rice",
+        "mango",
+        "coconut milk",
+        "chili flakes"
+      ],
+      "price": 9.99,
+      "calories": 550,
+      "prep_time": "15-20 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "exotic",
+        "sweet"
+      ],
+      "allergens": [
+        "dairy",
+        "nuts"
+      ],
+      "popularity_score": 88,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A mouthwatering image of Spicy Mango Sticky Rice, showcasing the vibrant colors and textures"
+    },
+    {
+      "product_id": "FF066",
+      "name": "Chocolate Lava Cake",
+      "category": "Dessert",
+      "description": "A warm, gooey chocolate cake with a molten chocolate center. Served with a scoop of vanilla ice cream.",
+      "ingredients": [
+        "chocolate cake",
+        "chocolate",
+        "vanilla ice cream"
+      ],
+      "price": 10.99,
+      "calories": 600,
+      "prep_time": "15-20 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "rich",
+        "indulgent"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 95,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A tempting photo of a warm chocolate lava cake with a flowing chocolate center and a scoop of vanilla ice cream"
+    },
+    {
+      "product_id": "FF067",
+      "name": "Key Lime Pie",
+      "category": "Dessert",
+      "description": "A classic tangy and sweet Key Lime Pie with a graham cracker crust. A refreshing and zesty dessert.",
+      "ingredients": [
+        "key lime juice",
+        "graham cracker crust",
+        "sweetened condensed milk"
+      ],
+      "price": 7.99,
+      "calories": 400,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "zesty"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A picture of a Key Lime Pie showcasing its bright yellow filling and graham cracker crust"
+    },
+    {
+      "product_id": "FF068",
+      "name": "Apple Crumble",
+      "category": "Dessert",
+      "description": "Warm baked apples topped with a buttery crumble topping. A comforting and classic dessert.",
+      "ingredients": [
+        "apples",
+        "flour",
+        "butter",
+        "sugar",
+        "cinnamon"
+      ],
+      "price": 6.49,
+      "calories": 480,
+      "prep_time": "15-20 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "comforting",
+        "warm"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A rustic photo of warm Apple Crumble with a golden brown crumble topping"
+    },
+    {
+      "product_id": "FF069",
+      "name": "Pistachio Ice Cream with Rosewater",
+      "category": "Dessert",
+      "description": "A sophisticated ice cream with the delicate floral aroma of rosewater and crunchy pistachios.",
+      "ingredients": [
+        "pistachios",
+        "rosewater",
+        "cream",
+        "sugar"
+      ],
+      "price": 8.49,
+      "calories": 500,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "elegant",
+        "sophisticated"
+      ],
+      "allergens": [
+        "dairy",
+        "nuts"
+      ],
+      "popularity_score": 80,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A close-up shot of scoops of Pistachio Ice Cream with Rosewater, showcasing the color and texture"
+    },
+    {
+      "product_id": "FF070",
+      "name": "Mini Cheesecake Bites",
+      "category": "Dessert",
+      "description": "Individual sized cheesecake bites with a creamy filling and a graham cracker crust. Perfect for satisfying a sweet craving.",
+      "ingredients": [
+        "cream cheese",
+        "sugar",
+        "graham cracker crumbs"
+      ],
+      "price": 12.99,
+      "calories": 350,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "sweet",
+        "satisfying"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A tempting photo of Mini Cheesecake Bites arranged on a plate"
+    },
+    {
+      "product_id": "FF071",
+      "name": "Mediterranean Quinoa Salad",
+      "category": "Salads & Healthy Options",
+      "description": "Fluffy quinoa tossed with Kalamata olives, sun-dried tomatoes, cucumber, feta cheese, and a lemon-herb vinaigrette. Topped with toasted pine nuts for extra crunch.",
+      "ingredients": [
+        "quinoa",
+        "Kalamata olives",
+        "sun-dried tomatoes",
+        "cucumber",
+        "feta cheese",
+        "lemon-herb vinaigrette",
+        "pine nuts"
+      ],
+      "price": 12.99,
+      "calories": 450,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "fresh",
+        "light"
+      ],
+      "allergens": [
+        "nuts",
+        "dairy"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A vibrant photo of a Mediterranean Quinoa Salad in a rustic bowl, garnished with fresh herbs and pine nuts"
+    },
+    {
+      "product_id": "FF072",
+      "name": "Spicy Asian Slaw with Peanut Dressing",
+      "category": "Salads & Healthy Options",
+      "description": "Shredded cabbage and carrots tossed in a spicy peanut dressing, with crunchy peanuts, mandarin oranges, and cilantro. A delightful mix of sweet, savory, and spicy flavors.",
+      "ingredients": [
+        "shredded cabbage",
+        "carrots",
+        "peanut dressing",
+        "peanuts",
+        "mandarin oranges",
+        "cilantro"
+      ],
+      "price": 9.99,
+      "calories": 380,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "zesty",
+        "refreshing"
+      ],
+      "allergens": [
+        "peanuts",
+        "soy"
+      ],
+      "popularity_score": 92,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "A close-up shot of a colorful Spicy Asian Slaw with a vibrant peanut dressing"
+    },
+    {
+      "product_id": "FF073",
+      "name": "Grilled Chicken & Avocado Salad",
+      "category": "Salads & Healthy Options",
+      "description": "Grilled chicken breast atop a bed of mixed greens, ripe avocado slices, cherry tomatoes, and crumbled bacon. Drizzled with a creamy ranch dressing.",
+      "ingredients": [
+        "grilled chicken breast",
+        "mixed greens",
+        "avocado",
+        "cherry tomatoes",
+        "bacon",
+        "ranch dressing"
+      ],
+      "price": 10.99,
+      "calories": 600,
+      "prep_time": "10-15 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "satisfying",
+        "hearty"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A tempting image of a Grilled Chicken & Avocado Salad with juicy chicken and creamy ranch dressing"
+    },
+    {
+      "product_id": "FF074",
+      "name": "Black Bean & Corn Salad with Lime Dressing",
+      "category": "Salads & Healthy Options",
+      "description": "A zesty mix of black beans, corn, red onion, bell peppers, and cilantro, tossed in a zesty lime dressing. Perfect for a light and refreshing meal.",
+      "ingredients": [
+        "black beans",
+        "corn",
+        "red onion",
+        "bell peppers",
+        "cilantro",
+        "lime dressing"
+      ],
+      "price": 7.99,
+      "calories": 350,
+      "prep_time": "5-8 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "vibrant",
+        "light"
+      ],
+      "allergens": [],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A visually appealing photo of a Black Bean & Corn Salad with a vibrant lime dressing"
+    },
+    {
+      "product_id": "FF075",
+      "name": "Caprese Salad with Balsamic Glaze",
+      "category": "Salads & Healthy Options",
+      "description": "Fresh mozzarella, juicy tomatoes, and basil leaves drizzled with a balsamic glaze. A classic Italian salad, simple yet elegant.",
+      "ingredients": [
+        "mozzarella",
+        "tomatoes",
+        "basil",
+        "balsamic glaze"
+      ],
+      "price": 8.99,
+      "calories": 300,
+      "prep_time": "3-5 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "classic",
+        "elegant"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 95,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A beautifully styled Caprese Salad with fresh ingredients and a dark balsamic glaze"
+    },
+    {
+      "product_id": "FF076",
+      "name": "Salmon Avocado Salad",
+      "category": "Salads & Healthy Options",
+      "description": "Flaked grilled salmon on a bed of mixed greens with avocado, cucumber, and a light lemon vinaigrette. A healthy and flavorful option.",
+      "ingredients": [
+        "grilled salmon",
+        "mixed greens",
+        "avocado",
+        "cucumber",
+        "lemon vinaigrette"
+      ],
+      "price": 14.99,
+      "calories": 550,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "healthy",
+        "refreshing"
+      ],
+      "allergens": [],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A mouthwatering photo of a Salmon Avocado Salad with flaky salmon and fresh ingredients"
+    },
+    {
+      "product_id": "FF077",
+      "name": "Falafel Salad with Tahini Dressing",
+      "category": "Salads & Healthy Options",
+      "description": "Crispy falafel balls over a bed of romaine lettuce, chopped tomatoes, cucumbers, and onions. Topped with a creamy tahini dressing.",
+      "ingredients": [
+        "falafel",
+        "romaine lettuce",
+        "tomatoes",
+        "cucumbers",
+        "onions",
+        "tahini dressing"
+      ],
+      "price": 11.99,
+      "calories": 480,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "filling",
+        "flavorful"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A flavorful photo of a Falafel Salad with crispy falafel balls and creamy tahini dressing"
+    },
+    {
+      "product_id": "FF078",
+      "name": "Shrimp & Mango Salad with Coconut Dressing",
+      "category": "Salads & Healthy Options",
+      "description": "Succulent grilled shrimp with fresh mango chunks, red onion, and cilantro, tossed in a creamy coconut dressing. A tropical twist on a classic salad.",
+      "ingredients": [
+        "grilled shrimp",
+        "mango",
+        "red onion",
+        "cilantro",
+        "coconut dressing"
+      ],
+      "price": 13.99,
+      "calories": 520,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "tropical",
+        "refreshing"
+      ],
+      "allergens": [
+        "coconut",
+        "shellfish"
+      ],
+      "popularity_score": 90,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A vibrant photo of a Shrimp & Mango Salad with grilled shrimp, fresh mango, and a creamy coconut dressing"
+    },
+    {
+      "product_id": "FF079",
+      "name": "Tofu & Edamame Salad with Sesame Ginger Dressing",
+      "category": "Salads & Healthy Options",
+      "description": "Cubed pan-fried tofu and edamame tossed with shredded carrots, snap peas, and a sesame ginger dressing. A healthy and protein-packed vegan option.",
+      "ingredients": [
+        "tofu",
+        "edamame",
+        "carrots",
+        "snap peas",
+        "sesame ginger dressing"
+      ],
+      "price": 9.49,
+      "calories": 400,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "healthy",
+        "refreshing"
+      ],
+      "allergens": [
+        "sesame"
+      ],
+      "popularity_score": 86,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A delicious photo of a Tofu & Edamame Salad with pan-fried tofu, edamame, and a sesame ginger dressing"
+    },
+    {
+      "product_id": "FF080",
+      "name": "Buffalo Chicken Salad Wraps",
+      "category": "Salads & Healthy Options",
+      "description": "Shredded buffalo chicken tossed with celery, carrots, and a creamy ranch dressing, all wrapped in a whole-wheat tortilla. A satisfying and flavorful option.",
+      "ingredients": [
+        "buffalo chicken",
+        "celery",
+        "carrots",
+        "ranch dressing",
+        "whole wheat tortilla"
+      ],
+      "price": 10.49,
+      "calories": 650,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "spicy",
+        "satisfying"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 70,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 7,
+      "image_prompt": "A tempting image of Buffalo Chicken Salad Wraps with juicy chicken and creamy ranch dressing"
+    },
+    {
+      "product_id": "FF081",
+      "name": "Sunrise Scramble Bowl",
+      "category": "Breakfast Items",
+      "description": "A vibrant mix of scrambled eggs, chorizo, roasted potatoes, bell peppers, and a drizzle of chipotle aioli. Topped with fresh cilantro.",
+      "ingredients": [
+        "eggs",
+        "chorizo",
+        "potatoes",
+        "bell peppers",
+        "chipotle aioli",
+        "cilantro"
+      ],
+      "price": 8.99,
+      "calories": 450,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "savory"
+      ],
+      "mood_tags": [
+        "energizing",
+        "satisfying"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 82,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 3,
+      "image_prompt": "A close-up shot of a sizzling Sunrise Scramble Bowl, showcasing the vibrant colors and textures"
+    },
+    {
+      "product_id": "FF082",
+      "name": "Belgian Waffle Stack",
+      "category": "Breakfast Items",
+      "description": "Three fluffy Belgian waffles layered with whipped cream, fresh berries, and a drizzle of maple syrup. A classic breakfast treat.",
+      "ingredients": [
+        "Belgian waffles",
+        "whipped cream",
+        "berries",
+        "maple syrup"
+      ],
+      "price": 7.49,
+      "calories": 600,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "sweet"
+      ],
+      "mood_tags": [
+        "comfort",
+        "sweet"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 90,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A stack of golden-brown Belgian waffles with whipped cream, berries, and maple syrup, on a white plate"
+    },
+    {
+      "product_id": "FF083",
+      "name": "Breakfast Burrito Bowl",
+      "category": "Breakfast Items",
+      "description": "A hearty bowl featuring scrambled eggs, seasoned ground beef, black beans, corn, cheddar cheese, pico de gallo, and a creamy avocado ranch dressing.",
+      "ingredients": [
+        "scrambled eggs",
+        "ground beef",
+        "black beans",
+        "corn",
+        "cheddar cheese",
+        "pico de gallo",
+        "avocado ranch"
+      ],
+      "price": 9.49,
+      "calories": 700,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "savory"
+      ],
+      "mood_tags": [
+        "filling",
+        "hearty"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 78,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 2,
+      "image_prompt": "A vibrant and colorful Breakfast Burrito Bowl in a rustic bowl"
+    },
+    {
+      "product_id": "FF084",
+      "name": "Yogurt Parfait with Granola",
+      "category": "Breakfast Items",
+      "description": "Layers of creamy Greek yogurt, crunchy granola, and fresh seasonal fruits. A healthy and delicious start to the day.",
+      "ingredients": [
+        "Greek yogurt",
+        "granola",
+        "seasonal fruits"
+      ],
+      "price": 6.99,
+      "calories": 350,
+      "prep_time": "3-5 mins",
+      "dietary_tags": [
+        "healthy",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "light"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 85,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A layered Yogurt Parfait in a clear glass, showcasing the different textures and colors"
+    },
+    {
+      "product_id": "FF085",
+      "name": "Spicy Chicken Biscuit",
+      "category": "Breakfast Items",
+      "description": "A flaky buttermilk biscuit topped with crispy, spicy fried chicken, cheddar cheese, and a drizzle of sriracha mayo.",
+      "ingredients": [
+        "buttermilk biscuit",
+        "fried chicken",
+        "cheddar cheese",
+        "sriracha mayo"
+      ],
+      "price": 7.99,
+      "calories": 550,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "savory",
+        "spicy"
+      ],
+      "mood_tags": [
+        "comfort",
+        "satisfying"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 6,
+      "image_prompt": "A juicy Spicy Chicken Biscuit with cheese and sriracha mayo, on a rustic wooden table"
+    },
+    {
+      "product_id": "FF086",
+      "name": "Avocado Toast with Everything Bagel Seasoning",
+      "category": "Breakfast Items",
+      "description": "Toasted multigrain bread topped with mashed avocado, everything bagel seasoning, a sprinkle of red pepper flakes, and a drizzle of olive oil.",
+      "ingredients": [
+        "multigrain bread",
+        "avocado",
+        "everything bagel seasoning",
+        "red pepper flakes",
+        "olive oil"
+      ],
+      "price": 5.99,
+      "calories": 300,
+      "prep_time": "4-6 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "healthy"
+      ],
+      "mood_tags": [
+        "light",
+        "refreshing"
+      ],
+      "allergens": [
+        "gluten"
+      ],
+      "popularity_score": 88,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 1,
+      "image_prompt": "A slice of avocado toast with everything bagel seasoning and red pepper flakes, on a wooden board"
+    },
+    {
+      "product_id": "FF087",
+      "name": "Breakfast Quesadilla",
+      "category": "Breakfast Items",
+      "description": "A warm flour tortilla filled with scrambled eggs, chorizo, jack cheese, and a blend of Mexican spices. Served with salsa.",
+      "ingredients": [
+        "flour tortilla",
+        "scrambled eggs",
+        "chorizo",
+        "jack cheese",
+        "Mexican spices",
+        "salsa"
+      ],
+      "price": 6.49,
+      "calories": 480,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [
+        "savory"
+      ],
+      "mood_tags": [
+        "comfort",
+        "filling"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 80,
+      "chef_special": true,
+      "limited_time": false,
+      "spice_level": 4,
+      "image_prompt": "A folded Breakfast Quesadilla with salsa on the side, on a rustic wooden table"
+    },
+    {
+      "product_id": "FF088",
+      "name": "Smoked Salmon Bagel",
+      "category": "Breakfast Items",
+      "description": "A toasted everything bagel topped with smoked salmon, cream cheese, red onion, capers, and dill.",
+      "ingredients": [
+        "everything bagel",
+        "smoked salmon",
+        "cream cheese",
+        "red onion",
+        "capers",
+        "dill"
+      ],
+      "price": 10.99,
+      "calories": 520,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "savory"
+      ],
+      "mood_tags": [
+        "elegant",
+        "sophisticated"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 92,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "A toasted everything bagel with smoked salmon, cream cheese, and fresh herbs"
+    },
+    {
+      "product_id": "FF089",
+      "name": "Pancakes with Nutella and Bananas",
+      "category": "Breakfast Items",
+      "description": "Three fluffy pancakes topped with Nutella, sliced bananas, and a dusting of powdered sugar. A sweet and indulgent breakfast treat.",
+      "ingredients": [
+        "pancakes",
+        "Nutella",
+        "bananas",
+        "powdered sugar"
+      ],
+      "price": 8.49,
+      "calories": 650,
+      "prep_time": "6-8 mins",
+      "dietary_tags": [
+        "sweet"
+      ],
+      "mood_tags": [
+        "comfort",
+        "indulgent"
+      ],
+      "allergens": [
+        "gluten",
+        "nuts"
+      ],
+      "popularity_score": 87,
+      "chef_special": false,
+      "limited_time": false,
+      "spice_level": 0,
+      "image_prompt": "Three fluffy pancakes with Nutella, bananas, and powdered sugar, on a white plate"
+    },
+    {
+      "product_id": "FF090",
+      "name": "Acai Berry Bowl with Coconut",
+      "category": "Breakfast Items",
+      "description": "A refreshing blend of acai puree, topped with granola, fresh berries, shredded coconut, and a drizzle of honey. A healthy and vibrant breakfast option.",
+      "ingredients": [
+        "acai puree",
+        "granola",
+        "berries",
+        "shredded coconut",
+        "honey"
+      ],
+      "price": 9.99,
+      "calories": 400,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "healthy",
+        "vegetarian"
+      ],
+      "mood_tags": [
+        "refreshing",
+        "energizing"
+      ],
+      "allergens": [
+        "gluten",
+        "nuts"
+      ],
+      "popularity_score": 79,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 0,
+      "image_prompt": "A vibrant Acai Berry Bowl with various toppings, in a rustic bowl"
+    },
+    {
+      "product_id": "FF091",
+      "name": "Spicy Korean BBQ Burger",
+      "category": "Burger",
+      "description": "Juicy bulgogi beef patty, kimchi slaw, gochujang mayo, sesame seeds on a brioche bun.",
+      "ingredients": [
+        "Bulgogi beef",
+        "Kimchi",
+        "Gochujang mayo",
+        "Brioche bun"
+      ],
+      "price": 12.99,
+      "calories": 750,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "savory",
+        "bold"
+      ],
+      "allergens": [
+        "soy",
+        "gluten"
+      ],
+      "popularity_score": 85,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 7,
+      "image_prompt": "A close-up shot of a juicy Korean BBQ burger with kimchi slaw and gochujang mayo, sesame seeds on a brioche bun."
+    },
+    {
+      "product_id": "FF092",
+      "name": "Mediterranean Quinoa Bowl",
+      "category": "Bowl",
+      "description": "Fluffy quinoa, grilled halloumi, roasted vegetables, lemon-herb dressing.",
+      "ingredients": [
+        "Quinoa",
+        "Halloumi",
+        "Roasted vegetables",
+        "Lemon-herb dressing"
+      ],
+      "price": 9.99,
+      "calories": 450,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 70,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 1,
+      "image_prompt": "A vibrant photo of a Mediterranean Quinoa Bowl with grilled halloumi and assorted roasted vegetables."
+    },
+    {
+      "product_id": "FF093",
+      "name": "Nashville Hot Chicken Sandwich",
+      "category": "Sandwich",
+      "description": "Crispy fried chicken breast, Nashville hot sauce, pickles, coleslaw on a toasted bun.",
+      "ingredients": [
+        "Fried chicken",
+        "Nashville hot sauce",
+        "Pickles",
+        "Coleslaw"
+      ],
+      "price": 10.49,
+      "calories": 800,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [
+        "spicy"
+      ],
+      "mood_tags": [
+        "bold",
+        "comfort"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 90,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 9,
+      "image_prompt": "A mouthwatering image of a Nashville Hot Chicken Sandwich with a generous drizzle of hot sauce."
+    },
+    {
+      "product_id": "FF094",
+      "name": "Chipotle Ranch Chicken Wrap",
+      "category": "Wrap",
+      "description": "Grilled chicken, chipotle ranch dressing, lettuce, tomato, cheddar cheese in a flour tortilla.",
+      "ingredients": [
+        "Grilled chicken",
+        "Chipotle ranch",
+        "Lettuce",
+        "Tomato",
+        "Cheddar cheese"
+      ],
+      "price": 8.99,
+      "calories": 600,
+      "prep_time": "7-9 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "savory",
+        "filling"
+      ],
+      "allergens": [
+        "dairy",
+        "gluten"
+      ],
+      "popularity_score": 78,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 3,
+      "image_prompt": "A tempting photo of a Chipotle Ranch Chicken Wrap, showcasing the ingredients and tortilla."
+    },
+    {
+      "product_id": "FF095",
+      "name": "Sweet Chili Shrimp Tacos",
+      "category": "Tacos",
+      "description": "Three crispy shrimp tacos with sweet chili sauce, shredded cabbage, pico de gallo.",
+      "ingredients": [
+        "Shrimp",
+        "Sweet chili sauce",
+        "Cabbage",
+        "Pico de gallo"
+      ],
+      "price": 11.49,
+      "calories": 550,
+      "prep_time": "9-11 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "savory",
+        "zesty"
+      ],
+      "allergens": [
+        "shellfish"
+      ],
+      "popularity_score": 82,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 4,
+      "image_prompt": "A colorful and appetizing photo of three Sweet Chili Shrimp Tacos with all the toppings."
+    },
+    {
+      "product_id": "FF096",
+      "name": "Classic Philly Cheesesteak",
+      "category": "Sandwich",
+      "description": "Thinly sliced steak, melted cheese, onions, peppers on a toasted hoagie roll.",
+      "ingredients": [
+        "Steak",
+        "Cheese",
+        "Onions",
+        "Peppers"
+      ],
+      "price": 9.49,
+      "calories": 700,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "comfort",
+        "classic"
+      ],
+      "allergens": [
+        "gluten",
+        "dairy"
+      ],
+      "popularity_score": 95,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 1,
+      "image_prompt": "A mouth-watering photo of a Classic Philly Cheesesteak, showcasing the melted cheese and steak."
+    },
+    {
+      "product_id": "FF097",
+      "name": "Buffalo Cauliflower Bites",
+      "category": "Appetizer",
+      "description": "Crispy cauliflower florets tossed in buffalo sauce, served with ranch dressing.",
+      "ingredients": [
+        "Cauliflower",
+        "Buffalo sauce",
+        "Ranch dressing"
+      ],
+      "price": 6.99,
+      "calories": 350,
+      "prep_time": "5-7 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten-free"
+      ],
+      "mood_tags": [
+        "spicy",
+        "fun"
+      ],
+      "allergens": [
+        "dairy"
+      ],
+      "popularity_score": 65,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 6,
+      "image_prompt": "A tempting close-up of crispy Buffalo Cauliflower Bites with ranch dressing."
+    },
+    {
+      "product_id": "FF098",
+      "name": "Hawaiian BBQ Pulled Pork Sandwich",
+      "category": "Sandwich",
+      "description": "Slow-cooked pulled pork, pineapple salsa, teriyaki glaze on a toasted bun.",
+      "ingredients": [
+        "Pulled pork",
+        "Pineapple salsa",
+        "Teriyaki glaze"
+      ],
+      "price": 10.99,
+      "calories": 650,
+      "prep_time": "10-12 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "sweet",
+        "savory"
+      ],
+      "allergens": [
+        "gluten",
+        "soy"
+      ],
+      "popularity_score": 80,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 2,
+      "image_prompt": "An appetizing photo of a Hawaiian BBQ Pulled Pork Sandwich with pineapple salsa and teriyaki glaze."
+    },
+    {
+      "product_id": "FF099",
+      "name": "Black Bean Veggie Burger",
+      "category": "Burger",
+      "description": "Black bean patty, lettuce, tomato, avocado, chipotle mayo on a whole-wheat bun.",
+      "ingredients": [
+        "Black bean patty",
+        "Lettuce",
+        "Tomato",
+        "Avocado",
+        "Chipotle mayo"
+      ],
+      "price": 8.49,
+      "calories": 500,
+      "prep_time": "8-10 mins",
+      "dietary_tags": [
+        "vegetarian",
+        "vegan"
+      ],
+      "mood_tags": [
+        "healthy",
+        "fresh"
+      ],
+      "allergens": [
+        "soy",
+        "gluten"
+      ],
+      "popularity_score": 75,
+      "chef_special": false,
+      "limited_time": true,
+      "spice_level": 3,
+      "image_prompt": "A vibrant and healthy-looking photo of a Black Bean Veggie Burger with all the toppings."
+    },
+    {
+      "product_id": "FF100",
+      "name": "Lobster Roll",
+      "category": "Sandwich",
+      "description": "Chunks of fresh lobster meat tossed in mayo, celery, and lemon juice on a toasted brioche roll.",
+      "ingredients": [
+        "Lobster meat",
+        "Mayonnaise",
+        "Celery",
+        "Lemon juice"
+      ],
+      "price": 14.99,
+      "calories": 780,
+      "prep_time": "12-15 mins",
+      "dietary_tags": [],
+      "mood_tags": [
+        "luxurious",
+        "indulgent"
+      ],
+      "allergens": [
+        "shellfish",
+        "gluten"
+      ],
+      "popularity_score": 92,
+      "chef_special": true,
+      "limited_time": true,
+      "spice_level": 0,
+      "image_prompt": "A luxurious and appetizing photo of a Lobster Roll, showcasing the fresh lobster meat."
+    }
+  ]
+}
