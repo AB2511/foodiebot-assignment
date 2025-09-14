@@ -1,4 +1,3 @@
-# chat_engine.py
 import os
 import re
 import sqlite3
@@ -32,43 +31,31 @@ NEGATIVE_FACTORS = {
 
 # ---------- Keyword → DB rules ----------
 RULES = {
-    # Generic keywords
-    "burger": {"category": "Burgers"},
-    "pizza": {"category": "Pizza"},
-    "wrap": {"category": "Wraps"},
-    "taco": {"category": "Tacos & Wraps"},
-    "salad": {"category": "Salads & Healthy Options"},
+    "burger": {"category": ["Classic Burgers", "Fusion Burgers", "Vegetarian Burgers"]},
+    "pizza": {"category": ["Gourmet Pizza", "Personal Pizza", "Traditional Pizza"]},
+    "wrap": {"category": ["Wrap"]},
+    "taco": {"category": ["Tacos", "Tacos & Wraps"]},
+    "salad": {"category": ["Salads & Healthy Options"]},
+    "bowl": {"category": ["Bowl"]},
+    "dessert": {"category": ["Dessert"]},
+    "fried chicken sandwich": {"category": ["Fried Chicken Sandwiches"]},
+    "fried chicken tenders": {"category": ["Fried Chicken Tenders"]},
+    "fried chicken wings": {"category": ["Fried Chicken Wings"]},
+    "sandwich": {"category": ["Sandwich"]},
+    "sides": {"category": ["Sides & Appetizers"]},
+    "shake": {"category": ["Shake"]},
+    "soda": {"category": ["Soda"]},
+    "specialty drink": {"category": ["Specialty Drink"]},
+    "breakfast": {"category": ["Breakfast Items"]},
     "spicy": {"spice_min": 5},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
-    # Specific DB categories
-    "classic burger": {"category": "Classic Burgers"},
-    "fusion burger": {"category": "Fusion Burgers"},
-    "vegetarian burger": {"category": "Vegetarian Burgers"},
-    "personal pizza": {"category": "Personal Pizza"},
-    "traditional pizza": {"category": "Traditional Pizza"},
-    "gourmet pizza": {"category": "Gourmet Pizza"},
-    "fried chicken sandwich": {"category": "Fried Chicken Sandwiches"},
-    "fried chicken tenders": {"category": "Fried Chicken Tenders"},
-    "fried chicken wings": {"category": "Fried Chicken Wings"},
-    "tacos": {"category": "Tacos"},
-    "bowl": {"category": "Bowl"},
-    "appetizer": {"category": "Appetizer"},
-    "sides": {"category": "Sides & Appetizers"},
-    "sandwich": {"category": "Sandwich"},
-    "shake": {"category": "Shake"},
-    "dessert": {"category": "Dessert"},
-    "breakfast": {"category": "Breakfast Items"},
-    "specialty drink": {"category": "Specialty Drink"},
-    "soda": {"category": "Soda"},
 }
 
 # ---------- Interest Score ----------
 def calculate_interest_score(message, product_match=True):
     score = 0
     m = message.lower()
-
-    # Engagement factors
     if any(word in m for word in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in m or 'vegan' in m:
@@ -86,7 +73,6 @@ def calculate_interest_score(message, product_match=True):
     if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
-    # Negative factors
     if any(word in m for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in m:
@@ -98,11 +84,10 @@ def calculate_interest_score(message, product_match=True):
 
     return max(0, min(100, score))
 
-# ---------- Query Database ----------
+# ---------- Database Query ----------
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
-
     conditions = []
     params = []
 
@@ -120,31 +105,28 @@ def query_database(filters):
 
     # Category filter
     if 'category' in filters:
-        conditions.append("LOWER(category) LIKE ?")
-        params.append(f"%{filters['category'].lower()}%")
+        cat = filters['category']
+        if isinstance(cat, list):
+            conditions.append("(" + " OR ".join(["LOWER(category) LIKE ?" for _ in cat]) + ")")
+            params.extend([c.lower() for c in cat])
+        else:
+            conditions.append("LOWER(category) LIKE ?")
+            params.append(f"%{cat.lower()}%")
 
-    # Price
+    # Price filter
     if "price_max" in filters:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # Spice
+    # Spice filter
     if "spice_min" in filters:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # Dietary
+    # Dietary filter
     if "dietary_tags" in filters:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
-
-    # Context-aware vegetarian/vegan
-    if 'context' in filters and (
-        'vegetarian' in filters['context'].lower() or
-        'vegan' in filters['context'].lower()
-    ):
-        conditions.append("(dietary_tags LIKE ? OR dietary_tags LIKE ?)")
-        params.extend(['%vegetarian%', '%vegan%'])
 
     sql = """
         SELECT product_id, name, category, price, spice_level, description, dietary_tags
@@ -152,25 +134,20 @@ def query_database(filters):
     """
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
-
     sql += " ORDER BY popularity_score DESC LIMIT 5"
     results = c.execute(sql, params).fetchall()
     conn.close()
-
-    if not results:
-        print("[DEBUG] No DB matches with filters:", filters)
     return results
 
-# ---------- Generate Response ----------
+# ---------- Response Generation ----------
 def generate_response(user_message, context=""):
     filters = {'context': context, 'keyword': user_message}
-
-    # Apply RULES
+    # Apply rules
     for keyword, rule in RULES.items():
         if keyword in user_message.lower():
             filters.update(rule)
 
-    # Budget parsing: "under $X" or "less than X dollars"
+    # Budget parsing
     price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
     if not price_match:
         price_match = re.search(r'less than ([0-9]+\.?[0-9]*) ?dollars', user_message.lower())
@@ -180,11 +157,9 @@ def generate_response(user_message, context=""):
     # Query DB
     results = query_database(filters)
     product_match = bool(results)
-
-    # Interest
     interest = calculate_interest_score(user_message, product_match)
 
-    # Build product info text
+    # Build product info
     if not results:
         product_info = "No matches found."
     else:
@@ -193,19 +168,15 @@ def generate_response(user_message, context=""):
         )
 
     prompt = f"""
-You are FoodieBot. Context: {context}.
-User: {user_message}.
-Recommend ONLY from these database products:
-{product_info}
+    You are FoodieBot. Context: {context}.
+    User: {user_message}.
+    Recommend ONLY from these database products:
+    {product_info}
 
-If no matches, say: "No matching products found in our database. What else can I help with?"
-Never invent products. Respect previous preferences (vegetarian, vegan, budget).
-"""
-    response = model.generate_content(
-        prompt,
-        generation_config={"temperature": 0.6, "max_output_tokens": 250}
-    ).text
-
+    If no matches, say: "No matching products found in our database. What else can I help with?"
+    Never invent products. Respect previous preferences (vegetarian, vegan, budget).
+    """
+    response = model.generate_content(prompt, generation_config={"temperature":0.6,"max_output_tokens":250}).text
     return response, interest
 
 # ---------- Log Conversation ----------
@@ -213,13 +184,13 @@ def log_conversation(user_message, response, interest):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
     c.execute('''
-    CREATE TABLE IF NOT EXISTS conversations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_message TEXT,
-        bot_response TEXT,
-        interest_score INTEGER,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+        CREATE TABLE IF NOT EXISTS conversations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_message TEXT,
+            bot_response TEXT,
+            interest_score INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
     ''')
     c.execute(
         "INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
