@@ -1,6 +1,6 @@
 # FoodieBot: Database-Driven Conversational Fast Food System
 
-This is my implementation for the Tecnvirons Pvt Ltd AI Food Agent Internship Assignment. Deadline: September 16, 2025. I used Gemini API as an alternative to Grok for data generation and chat (per "or alternative AI" in Phase 1). The system analyzes conversations, calculates interest scores, and recommends from a 100-product database in real-time.
+This is my implementation for the Tecnvirons Pvt Ltd AI Food Agent Internship Assignment. Deadline: September 15, 2025. I used Gemini API as an alternative to Grok for data generation in Phase 1. The system analyzes conversations, calculates interest scores, and recommends from a 100-product database in real-time.
 
 ## Assignment Overview
 Created an intelligent AI bot that works with pre-generated fast food data in SQLite. It analyzes user conversations, computes interest scores based on factors (preferences, dietary, budget, mood, enthusiasm, negatives like rejection), and recommends products. Includes Streamlit UI for chat and analytics.
@@ -44,14 +44,14 @@ Created an intelligent AI bot that works with pre-generated fast food data in SQ
 - **Data Variety**: 100 products with tags for mood/diet/spice ensure diverse filtering.
 
 ## Demo Video
-[Insert link: e.g., https://youtube.com/watch?v=yourvideo or https://drive.google.com/file/d/yourfile]. Shows live chat, recommendations, analytics.
+[Insert link: e.g., https://youtube.com/watch?v=yourvideo]. Shows live chat, recommendations, analytics.
 
 ## Technologies
 - Python, SQLite, Gemini API, Streamlit, Pandas, Matplotlib.
 
 ## Submission Notes
 - Excludes `.env` (API key) and optionally `foodiebot.db` (binary, recreatable with setup_db.py).
-- GitHub repo: [Insert link after pushing, e.g., https://github.com/yourusername/foodiebot-assignment].
+- GitHub repo: [https://github.com/AB2511/foodiebot-assignment].
 - Contact: Anjali Barge (bargeanjali650@gmail.com).
 
 This meets all phases of the assignment. Thank you!
