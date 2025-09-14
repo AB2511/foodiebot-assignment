@@ -28,6 +28,7 @@ NEGATIVE_FACTORS = {
 
 def calculate_interest_score(message, product_match=True):
     score = 0
+    # Engagement factors
     if any(word in message.lower() for word in ['love', 'spicy', 'korean', 'fusion']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in message.lower() or 'vegan' in message.lower():
@@ -42,16 +43,18 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
     if 'how much' in message.lower():
         score += ENGAGEMENT_FACTORS['price_inquiry']
-    if any(word in message.lower() for word in ['take it', 'add to cart']):
+    # Enhanced order intent detection
+    if any(phrase in message.lower() for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
+    # Negative factors
     if any(word in message.lower() for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in message.lower():
         score += NEGATIVE_FACTORS['budget_concern']
     if not product_match:
         score += NEGATIVE_FACTORS['dietary_conflict']
-    if "don't like" in message.lower():
+    if "don't like" in message.lower() or "not interested" in message.lower():
         score += NEGATIVE_FACTORS['rejection']
 
     return max(0, min(100, score))
@@ -86,14 +89,14 @@ def generate_response(user_message, context=""):
     filters = {'context': context}  
     if 'spicy' in user_message.lower() or 'curry' in user_message.lower():
         filters['spice_min'] = 5
-        filters['dietary_tags'] = 'spicy'
+        filters['dietary_tags'] = 'spicy'  # Note: 'spicy' might not be a valid tag; use context instead
     if 'under $10' in user_message.lower():
         filters['price_max'] = 10
     if 'vegetarian' in user_message.lower() or 'vegan' in user_message.lower():
         filters['dietary_tags'] = 'vegetarian' 
 
     results = query_database(filters)
-    product_match = bool(results)  
+    product_match = bool(results)
     if not results:
         product_info = "No matches found."
     else:
@@ -101,9 +104,10 @@ def generate_response(user_message, context=""):
     prompt = f"""
     You are FoodieBot. Use context: {context}.
     User: {user_message}.
-    Recommend ONLY from these exact database products (do not invent or add any): {product_info}.
+    Recommend ONLY from these exact database products: {product_info}.
+    If no matches, say exactly: "No matching products found in our database. What else can I help with?"
+    Do NOT suggest, mention, or invent any items not listed in the products above. Stick strictly to the provided data.
     Keep natural dialogue, extract preferences, maintain memory, and recommend based on mood/diet/budget.
-    If no matches, politely say "No matching products found in our database. What else can I help with?" Do NOT suggest non-existent items.
     """
     response = model.generate_content(
         prompt,

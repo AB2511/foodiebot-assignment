@@ -21,7 +21,19 @@ if user_input:
 
 # Analytics Sidebar
 st.sidebar.title("Analytics Dashboard")
+# Ensure database is created if not exists
 conn = sqlite3.connect('foodiebot.db')
+c = conn.cursor()
+c.execute('''
+    CREATE TABLE IF NOT EXISTS conversations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_message TEXT,
+        bot_response TEXT,
+        interest_score INTEGER,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+''')
+conn.commit()
 df = pd.read_sql_query("SELECT * FROM conversations", conn)
 conn.close()
 
@@ -33,10 +45,11 @@ if not df.empty:
     ax.set_ylabel('Interest Score')
     st.sidebar.pyplot(fig)
 
-    # Calculate average excluding initial 0% if present
+    # Calculate average excluding 0% scores
     valid_scores = df['interest_score'][df['interest_score'] > 0]
     avg_interest = valid_scores.mean() if not valid_scores.empty else 0.00
     st.sidebar.write(f"Average Interest: {avg_interest:.2f}%")
+    
     # Count unique dietary mentions
     dietary_mentions = set()
     for msg in df['user_message']:
@@ -48,7 +61,12 @@ if not df.empty:
             dietary_mentions.add('curry')
     st.sidebar.write(f"Unique Dietary Mentions: {', '.join(dietary_mentions) if dietary_mentions else 'None'}")
 
-# Database Admin Panel
+# Database Admin Panel with error handling
 st.sidebar.title("Product Admin")
-products_df = pd.read_sql_query("SELECT * FROM products", sqlite3.connect('foodiebot.db'))
-st.sidebar.dataframe(products_df)
+try:
+    conn = sqlite3.connect('foodiebot.db')
+    products_df = pd.read_sql_query("SELECT * FROM products", conn)
+    conn.close()
+    st.sidebar.dataframe(products_df)
+except sqlite3.Error as e:
+    st.sidebar.write("Error loading products: Database or table 'products' may not be initialized. Run setup_db.py locally to create it.")
