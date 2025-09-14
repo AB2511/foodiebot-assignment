@@ -31,11 +31,12 @@ NEGATIVE_FACTORS = {
 
 # ---------- Keyword → DB rules ----------
 RULES = {
-    "burger": {"category": ["Classic Burgers", "Fusion Burgers", "Vegetarian Burgers"]},
-    "pizza": {"category": ["Personal Pizza", "Traditional Pizza", "Gourmet Pizza"]},
-    "wrap": {"category": ["Wraps"]},
-    "taco": {"category": ["Tacos & Wraps"]},
-    "salad": {"category": ["Salads & Healthy Options"]},
+    # Generic keywords
+    "burger": {},
+    "pizza": {},
+    "wrap": {},
+    "taco": {},
+    "salad": {},
     "spicy": {"spice_min": 5},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
@@ -55,7 +56,7 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['budget_mention']
     if 'adventurous' in m:
         score += ENGAGEMENT_FACTORS['mood_indication']
-    if '?' in m:
+    if '?' in message:
         score += ENGAGEMENT_FACTORS['question_asking']
     if any(word in m for word in ['amazing', 'perfect', 'love']):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
@@ -80,6 +81,7 @@ def calculate_interest_score(message, product_match=True):
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
+
     conditions = []
     params = []
 
@@ -87,36 +89,30 @@ def query_database(filters):
     if "keyword" in filters:
         kw = f"%{filters['keyword'].lower()}%"
         conditions.append("""(
-            LOWER(name) LIKE ? OR
-            LOWER(category) LIKE ? OR
-            LOWER(description) LIKE ? OR
-            LOWER(dietary_tags) LIKE ? OR
-            LOWER(mood_tags) LIKE ?
+            LOWER(name) LIKE ?
+            OR LOWER(category) LIKE ?
+            OR LOWER(description) LIKE ?
+            OR LOWER(dietary_tags) LIKE ?
+            OR LOWER(mood_tags) LIKE ?
         )""")
         params += [kw]*5
 
-    # Category filter (handle multiple)
+    # Category filter (optional)
     if 'category' in filters:
-        cats = filters['category']
-        if isinstance(cats, str):
-            cats = [cats]
-        category_conditions = []
-        for cat in cats:
-            category_conditions.append("LOWER(category) LIKE ?")
-            params.append(f"%{cat.lower()}%")
-        conditions.append("(" + " OR ".join(category_conditions) + ")")
+        conditions.append("LOWER(category) LIKE ?")
+        params.append(f"%{filters['category'].lower()}%")
 
-    # Max price
+    # Price filter
     if "price_max" in filters:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # Spice
+    # Spice filter
     if "spice_min" in filters:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # Dietary
+    # Dietary filter
     if "dietary_tags" in filters:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
@@ -127,8 +123,8 @@ def query_database(filters):
     """
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
-    sql += " ORDER BY popularity_score DESC LIMIT 5"
 
+    sql += " ORDER BY popularity_score DESC LIMIT 5"
     results = c.execute(sql, params).fetchall()
     conn.close()
 
@@ -145,7 +141,7 @@ def generate_response(user_message, context=""):
         if keyword in user_message.lower():
             filters.update(rule)
 
-    # Parse budget
+    # Budget parsing
     price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
     if not price_match:
         price_match = re.search(r'less than ([0-9]+\.?[0-9]*) ?dollars', user_message.lower())
@@ -157,21 +153,21 @@ def generate_response(user_message, context=""):
     interest = calculate_interest_score(user_message, product_match)
 
     if not results:
-        product_info = "No matches found."
+        product_info = "No matching products found."
     else:
         product_info = "\n".join(
             [f"- {r[1]} ({r[2]}): ${r[3]}, Spice {r[4]}/10 - {r[5]} (Tags: {r[6]})" for r in results]
         )
 
     prompt = f"""
-    You are FoodieBot. Context: {context}.
-    User: {user_message}.
-    Recommend ONLY from these database products:
-    {product_info}
+You are FoodieBot. Context: {context}.
+User: {user_message}.
+Recommend ONLY from these database products:
+{product_info}
 
-    If no matches, say: "No matching products found in our database. What else can I help with?"
-    Never invent products. Respect previous preferences (vegetarian, vegan, budget).
-    """
+If no matches, say: "No matching products found in our database. What else can I help with?"
+Never invent products. Respect previous preferences (vegetarian, vegan, budget).
+"""
     response = model.generate_content(
         prompt,
         generation_config={"temperature": 0.6, "max_output_tokens": 250}
