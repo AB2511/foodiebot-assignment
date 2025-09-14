@@ -44,14 +44,14 @@ Created an intelligent AI bot that works with pre-generated fast food data in SQ
 - **Data Variety**: 100 products with tags for mood/diet/spice ensure diverse filtering.
 
 ## Demo Video
-[Insert link: e.g., https://youtube.com/watch?v=yourvideo]. Shows live chat, recommendations, analytics.
+ [Demo](https://youtube.com/watch?v=yourvideo). Shows live chat, recommendations, analytics.
 
 ## Technologies
 - Python, SQLite, Gemini API, Streamlit, Pandas, Matplotlib.
 
 ## Submission Notes
 - Excludes `.env` (API key) and optionally `foodiebot.db` (binary, recreatable with setup_db.py).
-- GitHub repo: [https://github.com/AB2511/foodiebot-assignment].
-- Contact: Anjali Barge (bargeanjali650@gmail.com).
+- GitHub repo: [Repo](https://github.com/AB2511/foodiebot-assignment)
+- Contact: Anjali Barge [Email](bargeanjali650@gmail.com)
 
 This meets all phases of the assignment. Thank you!
