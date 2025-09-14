@@ -42,7 +42,7 @@ conn.close()
 if not df.empty:
     st.sidebar.write("Interest Progression Graph:")
     fig, ax = plt.subplots()
-    ax.plot(df.index, df['interest_score'])  # Use index for turns
+    ax.plot(range(len(df)), df['interest_score'])  # Use range for turns
     ax.set_xlabel('Conversation Turns')
     ax.set_ylabel('Interest Score')
     st.sidebar.pyplot(fig)
