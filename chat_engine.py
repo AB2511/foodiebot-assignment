@@ -2,269 +2,271 @@
 import os
 import re
 import sqlite3
-from typing import Dict, Any, List, Tuple
+from dotenv import load_dotenv
+import google.generativeai as genai
 
-# Defer LLM setup to runtime to avoid import-time failures
-try:
-    from dotenv import load_dotenv
-    import google.generativeai as genai
-    load_dotenv()
-    GEMINI_KEY = os.getenv("GEMINI_API_KEY") or None
-except Exception:
-    GEMINI_KEY = None
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-DB_PATH = "foodiebot.db"
+# Scoring constants
+ENGAGEMENT_FACTORS = {
+    "specific_preferences": 15,
+    "dietary_restrictions": 10,
+    "budget_mention": 5,
+    "mood_indication": 20,
+    "question_asking": 10,
+    "enthusiasm_words": 8,
+    "price_inquiry": 25,
+    "order_intent": 30,
+}
+NEGATIVE_FACTORS = {
+    "hesitation": -10,
+    "budget_concern": -15,
+    "dietary_conflict": -20,
+    "rejection": -25,
+    "delay_response": -5,
+}
 
-# Normalized keyword -> DB hints (plural forms included)
+# Normalized keyword -> DB category/tag map (include plurals and DB categories)
 RULES = {
-    "burger": {"category": "Burgers"},
-    "burgers": {"category": "Burgers"},
+    # generic
+    "burger": {"category": "Burger"},
+    "burgers": {"category": "Burger"},
+    "pizza": {"category": "Pizza"},
+    "pizzas": {"category": "Pizza"},
+    "wrap": {"category": "Tacos & Wraps"},
+    "wraps": {"category": "Tacos & Wraps"},
+    "taco": {"category": "Tacos & Wraps"},
+    "tacos": {"category": "Tacos & Wraps"},
+    "salad": {"category": "Salads & Healthy Options"},
+    "salads": {"category": "Salads & Healthy Options"},
+    "spicy": {"spice_min": 5},
+    "vegetarian": {"dietary_tags": "vegetarian"},
+    "vegan": {"dietary_tags": "vegan"},
+    # specific DB categories (as seen in your DB)
     "classic burger": {"category": "Classic Burgers"},
     "fusion burger": {"category": "Fusion Burgers"},
     "vegetarian burger": {"category": "Vegetarian Burgers"},
-    "vegan": {"dietary_tags": "vegan"},
-    "vegetarian": {"dietary_tags": "vegetarian"},
-    "pizza": {"category": "Pizza"},
-    "pizzas": {"category": "Pizza"},
     "personal pizza": {"category": "Personal Pizza"},
     "traditional pizza": {"category": "Traditional Pizza"},
-    "wrap": {"category": "Tacos & Wraps"},
-    "wraps": {"category": "Tacos & Wraps"},
-    "taco": {"category": "Tacos"},
-    "tacos": {"category": "Tacos"},
-    "salad": {"category": "Salads & Healthy Options"},
-    "appetizer": {"category": "Appetizer"},
-    "side": {"category": "Sides & Appetizers"},
+    "gourmet pizza": {"category": "Gourmet Pizza"},
+    "fried chicken sandwich": {"category": "Fried Chicken Sandwiches"},
+    "fried chicken tenders": {"category": "Fried Chicken Tenders"},
+    "fried chicken wings": {"category": "Fried Chicken Wings"},
+    "sides": {"category": "Sides & Appetizers"},
+    "sandwich": {"category": "Sandwich"},
+    "shake": {"category": "Shake"},
     "dessert": {"category": "Dessert"},
-    "spicy": {"spice_min": 5},
-    "extra spicy": {"spice_min": 8},
-    "mild": {"spice_min": 0},
+    "breakfast": {"category": "Breakfast Items"},
+    "specialty drink": {"category": "Specialty Drink"},
+    "soda": {"category": "Soda"},
+    "bowl": {"category": "Bowl"},
+    "appetizer": {"category": "Appetizer"},
 }
 
-ENGAGEMENT_FACTORS = {
-    'specific_preferences': 15,
-    'dietary_restrictions': 10,
-    'budget_mention': 5,
-    'mood_indication': 20,
-    'question_asking': 10,
-    'enthusiasm_words': 8,
-    'price_inquiry': 25,
-    'order_intent': 30,
-}
-NEGATIVE_FACTORS = {
-    'hesitation': -10,
-    'budget_concern': -15,
-    'dietary_conflict': -20,
-    'rejection': -25,
-    'delay_response': -5,
-}
+# ---------- Helper functions ----------
+def _clean_text(s: str) -> str:
+    return (s or "").lower().strip()
 
-STOP_WORDS = {
-    "show", "me", "i", "want", "please", "give", "some", "something", "any", "want", "need",
-    "the", "a", "an", "for", "under", "less", "than", "dollars", "in", "on", "with"
-}
-
-def _connect():
-    return sqlite3.connect(DB_PATH)
-
-def _normalize_text(s: str) -> str:
-    if not s:
-        return ""
-    s = s.lower()
-    s = re.sub(r"[^\w\s]", " ", s)  # remove punctuation
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
-def _tokenize_and_filter(s: str) -> List[str]:
-    s = _normalize_text(s)
-    tokens = [t for t in s.split() if t and t not in STOP_WORDS]
-    # simple stemming: strip trailing 's' for plurals ("burgers" -> "burger")
-    tokens = [t[:-1] if t.endswith("s") and len(t) > 3 else t for t in tokens]
-    return tokens
-
-def _parse_budget(text: str):
-    t = text.lower()
-    m = re.search(r'under \$\s*([0-9]+(?:\.[0-9]+)?)', t)
+def _parse_price(user_text: str):
+    t = user_text.lower()
+    m = re.search(r"under ?\$\s*([0-9]+(?:\.[0-9]+)?)", t)
     if not m:
-        m = re.search(r'less than\s+([0-9]+(?:\.[0-9]+)?)\s*dollars', t)
-    if not m:
-        m = re.search(r'<\s*([0-9]+(?:\.[0-9]+)?)', t)
+        m = re.search(r"less than\s*([0-9]+(?:\.[0-9]+)?)\s*dollars?", t)
     if m:
         try:
             return float(m.group(1))
-        except:
+        except Exception:
             return None
     return None
 
 def calculate_interest_score(message: str, product_match: bool = True) -> int:
-    m = message.lower()
+    m = _clean_text(message)
     score = 0
-    if any(w in m for w in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
-        score += ENGAGEMENT_FACTORS['specific_preferences']
-    if 'vegetarian' in m or 'vegan' in m:
-        score += ENGAGEMENT_FACTORS['dietary_restrictions']
-    if re.search(r'under \$\d+|less than \d+|<\s*\d+', m):
-        score += ENGAGEMENT_FACTORS['budget_mention']
-    if 'adventurous' in m:
-        score += ENGAGEMENT_FACTORS['mood_indication']
-    if '?' in message:
-        score += ENGAGEMENT_FACTORS['question_asking']
-    if any(w in m for w in ['amazing', 'perfect', 'love']):
-        score += ENGAGEMENT_FACTORS['enthusiasm_words']
-    if 'how much' in m or 'price' in m:
-        score += ENGAGEMENT_FACTORS['price_inquiry']
-    if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart", "i want to order"]):
-        score += ENGAGEMENT_FACTORS['order_intent']
 
-    if any(w in m for w in ['maybe', 'not sure']):
-        score += NEGATIVE_FACTORS['hesitation']
-    if 'too expensive' in m:
-        score += NEGATIVE_FACTORS['budget_concern']
-    if not product_match and any(w in m for w in ['spicy', 'vegetarian', 'vegan', 'burger', 'pizza', 'wrap']):
-        score += NEGATIVE_FACTORS['dietary_conflict']
+    if any(w in m for w in ["love", "spicy", "korean", "fusion", "burger", "pizza", "wrap"]):
+        score += ENGAGEMENT_FACTORS["specific_preferences"]
+    if "vegetarian" in m or "vegan" in m:
+        score += ENGAGEMENT_FACTORS["dietary_restrictions"]
+    if "under $" in m or "less than" in m:
+        score += ENGAGEMENT_FACTORS["budget_mention"]
+    if "adventurous" in m:
+        score += ENGAGEMENT_FACTORS["mood_indication"]
+    if "?" in message:
+        score += ENGAGEMENT_FACTORS["question_asking"]
+    if any(w in m for w in ["amazing", "perfect", "love"]):
+        score += ENGAGEMENT_FACTORS["enthusiasm_words"]
+    if "how much" in m:
+        score += ENGAGEMENT_FACTORS["price_inquiry"]
+    if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
+        score += ENGAGEMENT_FACTORS["order_intent"]
+
+    # negatives
+    if any(w in m for w in ["maybe", "not sure"]):
+        score += NEGATIVE_FACTORS["hesitation"]
+    if "too expensive" in m:
+        score += NEGATIVE_FACTORS["budget_concern"]
+    if not product_match and any(w in m for w in ["spicy", "vegetarian", "vegan", "burger", "pizza"]):
+        score += NEGATIVE_FACTORS["dietary_conflict"]
     if "don't like" in m or "not interested" in m:
-        score += NEGATIVE_FACTORS['rejection']
-    return max(0, min(100, score))
+        score += NEGATIVE_FACTORS["rejection"]
 
-def query_database(filters: Dict[str, Any]) -> List[Tuple]:
+    return max(0, min(100, int(round(score))))
+
+# ---------- Database query ----------
+def query_database(filters: dict):
     """
     filters may contain:
-      - keyword_tokens: List[str]
-      - category
-      - price_max
-      - spice_min
-      - dietary_tags
-      - context
+      - category (string) => will use LIKE '%category%'
+      - keyword (string) => fallback full-text LIKE search on name/description/tags
+      - spice_min (int)
+      - price_max (float)
+      - dietary_tags (string)
+      - context (string) optional
+    Returns list of rows (product_id, name, category, price, spice_level, description, dietary_tags).
     """
-    conn = _connect()
+    conn = sqlite3.connect("foodiebot.db")
     c = conn.cursor()
+
     conditions = []
     params = []
 
-    # Category filter (match with LIKE)
-    if filters.get("category"):
+    # If category present, prefer category match
+    if "category" in filters and filters["category"]:
         conditions.append("LOWER(category) LIKE ?")
-        params.append("%" + filters["category"].lower() + "%")
+        params.append(f"%{filters['category'].lower()}%")
 
-    # Price filter
-    if filters.get("price_max") is not None:
+    # Price
+    if "price_max" in filters and filters["price_max"] is not None:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
     # Spice
-    if filters.get("spice_min") is not None:
+    if "spice_min" in filters and filters["spice_min"] is not None:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # dietary tags
-    if filters.get("dietary_tags"):
+    # Dietary
+    if "dietary_tags" in filters and filters["dietary_tags"]:
         conditions.append("LOWER(dietary_tags) LIKE ?")
-        params.append("%" + filters["dietary_tags"].lower() + "%")
+        params.append(f"%{filters['dietary_tags'].lower()}%")
 
-    # context aware vegetarian/vegan
-    if filters.get("context"):
-        ctx = filters["context"].lower()
-        if "vegetarian" in ctx or "vegan" in ctx:
+    # Context enforced vegetarian/vegan
+    if "context" in filters and filters["context"]:
+        ctxt = filters["context"].lower()
+        if "vegetarian" in ctxt or "vegan" in ctxt:
             conditions.append("(LOWER(dietary_tags) LIKE ? OR LOWER(dietary_tags) LIKE ?)")
-            params += ["%vegetarian%", "%vegan%"]
+            params.extend(["%vegetarian%", "%vegan%"])
 
-    # Keyword tokens: create a single big OR clause where any token matches any searchable column
-    token_list = filters.get("keyword_tokens") or []
-    if token_list:
-        token_clauses = []
-        for tok in token_list:
-            tok_w = "%" + tok.lower() + "%"
-            token_clauses.append("(LOWER(name) LIKE ? OR LOWER(category) LIKE ? OR LOWER(description) LIKE ? OR LOWER(dietary_tags) LIKE ? OR LOWER(mood_tags) LIKE ?)")
-            params += [tok_w, tok_w, tok_w, tok_w, tok_w]
-        # join token_clauses with OR (so if any token matches)
-        if token_clauses:
-            conditions.append("(" + " OR ".join(token_clauses) + ")")
+    # Keyword fallback (only if no stronger category filter or as additional filter)
+    if "keyword" in filters and filters["keyword"]:
+        kw = filters["keyword"].lower().strip()
+        # if keyword looks like a category (single word 'burgers' etc.) skip adding a generic clause
+        is_cat_like = False
+        for k in RULES.keys():
+            if k in kw and RULES[k].get("category"):
+                is_cat_like = True
+                break
+        if not is_cat_like:
+            kw_like = f"%{kw}%"
+            conditions.append("""(
+                LOWER(name) LIKE ? OR
+                LOWER(category) LIKE ? OR
+                LOWER(description) LIKE ? OR
+                LOWER(dietary_tags) LIKE ? OR
+                LOWER(mood_tags) LIKE ?
+            )""")
+            params += [kw_like] * 5
 
-    sql = ("SELECT product_id, name, category, price, spice_level, description, dietary_tags "
-           "FROM products")
+    sql = """
+        SELECT product_id, name, category, price, spice_level, description, dietary_tags
+        FROM products
+    """
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
-    sql += " ORDER BY popularity_score DESC LIMIT 12"
 
-    rows = c.execute(sql, params).fetchall()
+    sql += " ORDER BY popularity_score DESC LIMIT 10"
+    try:
+        results = c.execute(sql, params).fetchall()
+    except Exception as e:
+        # debug print
+        print("SQL Error:", e, sql, params)
+        results = []
     conn.close()
-    return rows
+    return results
 
-def _build_text_reply_from_results(results: List[Tuple]) -> str:
-    grouped = {}
-    for r in results:
-        pid, name, category, price, spice, desc, tags = r
-        grouped.setdefault(category or "Other", []).append((name, price, spice, desc, tags))
-    lines = ["Here are some recommendations from our database:"]
-    for cat, items in grouped.items():
-        lines.append(f"\n{cat}:")
-        for name, price, spice, desc, tags in items:
-            short = (desc[:200] + "...") if desc and len(desc) > 200 else (desc or "")
-            tag_str = f" (Tags: {tags})" if tags else ""
-            lines.append(f"- {name}: ${price:.2f}, Spice {spice}/10 - {short}{tag_str}")
-    return "\n".join(lines)
+# ---------- Generate response ----------
+def generate_response(user_message: str, context: str = ""):
+    """
+    Returns: (bot_text_response, interest_score(int), results(list-of-rows))
+    results is the rows returned from query_database (so UI and LLM share same products).
+    """
+    m = _clean_text(user_message)
+    filters = {"context": context}
 
-def generate_response(user_message: str, context: str = "") -> Tuple[str, int]:
-    # Normalize tokens
-    clean = _normalize_text(user_message)
-    tokens = _tokenize_and_filter(clean)
+    # 1) Try to detect explicit category/keywords using RULES (longer matches first)
+    sorted_keys = sorted(RULES.keys(), key=lambda x: -len(x))
+    for key in sorted_keys:
+        if key in m:
+            filters.update(RULES[key])
+            # prefer category match over generic keyword fallback
+            break
 
-    # Start filters
-    filters: Dict[str, Any] = {"context": context, "keyword_tokens": tokens}
+    # 2) price detection
+    price = _parse_price(user_message)
+    if price is not None:
+        filters["price_max"] = price
 
-    # Apply RULES if any keyword is present (more specific rules override)
-    for k, rule in RULES.items():
-        if k in clean:
-            filters.update(rule)
+    # 3) if we didn't detect category/diet, always provide a keyword fallback
+    filters["keyword"] = user_message.strip()
 
-    # Budget parsing
-    budget = _parse_budget(user_message)
-    if budget is not None:
-        filters["price_max"] = budget
-
-    # Spice handling
-    if "extra spicy" in user_message.lower():
-        filters["spice_min"] = max(filters.get("spice_min", 0), 7)
-    elif "spicy" in user_message.lower():
-        filters["spice_min"] = max(filters.get("spice_min", 0), 5)
-
-    # Query DB
+    # 4) Query DB for real results (so both UI and prompt use them)
     results = query_database(filters)
     product_match = bool(results)
 
-    # Interest score (recalculate after match)
+    # 5) recalc interest after knowing if matches exist
     interest = calculate_interest_score(user_message, product_match)
 
-    # If no match -> clear helpful reply
-    if not product_match:
-        return "No matching products found in our database. What else can I help with?", interest
+    # 6) build strict product_info text for the LLM prompt (only the rows returned)
+    if not results:
+        product_info = "No matches found."
+    else:
+        lines = []
+        for r in results[:8]:
+            # r: product_id, name, category, price, spice_level, description, dietary_tags
+            lines.append(f"- {r[1]} [{r[2]}]: ${r[3]:.2f}, Spice {r[4]}/10 - {r[5]} (Tags: {r[6]})")
+        product_info = "\n".join(lines)
 
-    # Build product summary text
-    product_text = _build_text_reply_from_results(results)
-
-    # If GEMINI key available, call LLM for a nicer, natural reply (but it's optional)
-    if GEMINI_KEY:
-        try:
-            genai.configure(api_key=GEMINI_KEY)
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            prompt = f"""You are FoodieBot. Use only the following product list to answer the user.
+    prompt = f"""
+You are FoodieBot. Use the following context: {context}
 User: {user_message}
-Products:
-{product_text}
-Keep the reply friendly and do not invent anything."""
-            gen_resp = model.generate_content(prompt, generation_config={"temperature": 0.4, "max_output_tokens": 220})
-            return gen_resp.text.strip(), interest
-        except Exception:
-            # If LLM fails, fall back to deterministic product_text
-            return product_text, interest
 
-    # No LLM configured -> deterministic product text
-    return product_text, interest
+Recommend ONLY from these database products (use only the names/lines below). If no matches, say exactly: "No matching products found in our database. What else can I help with?"
+{product_info}
 
+Respect user's dietary/budget/spice constraints. Do NOT invent products not listed above. Keep language natural and concise.
+"""
+    try:
+        response_text = model.generate_content(
+            prompt,
+            generation_config={"temperature": 0.6, "max_output_tokens": 300},
+        ).text
+    except Exception as e:
+        # If LLM fails, still return a fallback textual response so UI doesn't break
+        response_text = (
+            "Sorry — I'm temporarily unable to generate a natural response. "
+            + ("No matching products found in our database. What else can I help with?" if not product_match else product_info)
+        )
+
+    return response_text.strip(), interest, results
+
+# ---------- Logging ----------
 def log_conversation(user_message: str, response: str, interest: int):
-    conn = _connect()
+    conn = sqlite3.connect("foodiebot.db")
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_message TEXT,
@@ -272,8 +274,11 @@ def log_conversation(user_message: str, response: str, interest: int):
             interest_score INTEGER,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-    ''')
-    c.execute("INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
-              (user_message, response, int(interest)))
+        """
+    )
+    c.execute(
+        "INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
+        (user_message, response, int(interest)),
+    )
     conn.commit()
     conn.close()
