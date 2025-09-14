@@ -52,8 +52,8 @@ def calculate_interest_score(message, product_match=True):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in message.lower():
         score += NEGATIVE_FACTORS['budget_concern']
-    if not product_match:
-        score += NEGATIVE_FACTORS['dietary_conflict']
+    if not product_match and any(word in message.lower() for word in ['spicy', 'vegetarian', 'vegan']):
+        score += NEGATIVE_FACTORS['dietary_conflict']  # Apply only if preference exists
     if "don't like" in message.lower() or "not interested" in message.lower():
         score += NEGATIVE_FACTORS['rejection']
 
@@ -89,8 +89,15 @@ def generate_response(user_message, context=""):
     filters = {'context': context}  
     if 'spicy' in user_message.lower() or 'curry' in user_message.lower():
         filters['spice_min'] = 5
-    if 'under $10' in user_message.lower():
-        filters['price_max'] = 10
+    if 'under $' in user_message.lower():
+        # Extract number after 'under $'
+        for word in user_message.lower().split():
+            if word.startswith('$'):
+                try:
+                    filters['price_max'] = float(word[1:])
+                    break
+                except ValueError:
+                    pass
     if 'vegetarian' in user_message.lower() or 'vegan' in user_message.lower():
         filters['dietary_tags'] = 'vegetarian'
 
@@ -106,6 +113,7 @@ def generate_response(user_message, context=""):
     Recommend ONLY from these exact database products: {product_info}.
     If no matches, say exactly: "No matching products found in our database. What else can I help with?"
     Do NOT suggest, mention, or invent any items not explicitly listed in the products above. Adhere strictly to the provided data only.
+    Respect the user's previous preferences (e.g., vegetarian) from the context and do NOT recommend conflicting items.
     Keep natural dialogue, extract preferences, maintain memory, and recommend based on mood/diet/budget/spice level.
     """
     response = model.generate_content(
