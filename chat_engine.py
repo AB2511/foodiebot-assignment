@@ -29,37 +29,23 @@ NEGATIVE_FACTORS = {
     'delay_response': -5,
 }
 
-# ---------- Keyword → DB rules ----------
-RULES = {
-    # Generic keywords
-    "burger": {"category": "Burgers"},
-    "pizza": {"category": "Pizza"},
-    "wrap": {"category": "Wraps"},
-    "taco": {"category": "Tacos & Wraps"},
-    "salad": {"category": "Salads & Healthy Options"},
-    "spicy": {"spice_min": 5},
-    "vegetarian": {"dietary_tags": "vegetarian"},
-    "vegan": {"dietary_tags": "vegan"},
-    # Specific DB categories
-    "classic burger": {"category": "Classic Burgers"},
-    "fusion burger": {"category": "Fusion Burgers"},
-    "vegetarian burger": {"category": "Vegetarian Burgers"},
-    "personal pizza": {"category": "Personal Pizza"},
-    "traditional pizza": {"category": "Traditional Pizza"},
-    "gourmet pizza": {"category": "Gourmet Pizza"},
-    "fried chicken sandwich": {"category": "Fried Chicken Sandwiches"},
-    "fried chicken tenders": {"category": "Fried Chicken Tenders"},
-    "fried chicken wings": {"category": "Fried Chicken Wings"},
-    "tacos": {"category": "Tacos"},
-    "bowl": {"category": "Bowl"},
-    "appetizer": {"category": "Appetizer"},
-    "sides": {"category": "Sides & Appetizers"},
-    "sandwich": {"category": "Sandwich"},
-    "shake": {"category": "Shake"},
-    "dessert": {"category": "Dessert"},
-    "breakfast": {"category": "Breakfast Items"},
-    "specialty drink": {"category": "Specialty Drink"},
-    "soda": {"category": "Soda"},
+# ---------- Generic keyword → DB categories ----------
+GENERIC_CATEGORIES = {
+    "burger": ["Classic Burgers", "Fusion Burgers", "Vegetarian Burgers"],
+    "pizza": ["Personal Pizza", "Traditional Pizza", "Gourmet Pizza"],
+    "wrap": ["Wraps", "Tacos & Wraps"],
+    "taco": ["Tacos", "Tacos & Wraps"],
+    "salad": ["Salads & Healthy Options"],
+    "bowl": ["Bowl"],
+    "appetizer": ["Appetizer", "Sides & Appetizers"],
+    "sandwich": ["Sandwich", "Fried Chicken Sandwiches"],
+    "fried chicken wings": ["Fried Chicken Wings"],
+    "fried chicken tenders": ["Fried Chicken Tenders"],
+    "shake": ["Shake"],
+    "dessert": ["Dessert"],
+    "breakfast": ["Breakfast Items"],
+    "soda": ["Soda"],
+    "specialty drink": ["Specialty Drink"]
 }
 
 # ---------- Interest Score ----------
@@ -67,7 +53,6 @@ def calculate_interest_score(message, product_match=True):
     score = 0
     m = message.lower()
 
-    # Engagement factors
     if any(word in m for word in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in m or 'vegan' in m:
@@ -85,7 +70,6 @@ def calculate_interest_score(message, product_match=True):
     if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
-    # Negative factors
     if any(word in m for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in m:
@@ -101,11 +85,10 @@ def calculate_interest_score(message, product_match=True):
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
-
     conditions = []
     params = []
 
-    # Keyword fallback: search in name, category, description, tags
+    # Keyword fallback
     if "keyword" in filters:
         kw = f"%{filters['keyword'].lower()}%"
         conditions.append("""(
@@ -117,22 +100,22 @@ def query_database(filters):
         )""")
         params += [kw]*5
 
-    # Category filter
-    if 'category' in filters:
-        conditions.append("LOWER(category) LIKE ?")
-        params.append(f"%{filters['category'].lower()}%")
+    # Category options (generic keywords)
+    if 'category_options' in filters:
+        conditions.append("(" + " OR ".join("LOWER(category) LIKE ?" for _ in filters['category_options']) + ")")
+        params.extend([c.lower() for c in filters['category_options']])
 
-    # Price
+    # Price filter
     if "price_max" in filters:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # Spice
+    # Spice filter
     if "spice_min" in filters:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # Dietary
+    # Dietary filter
     if "dietary_tags" in filters:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
@@ -155,32 +138,34 @@ def query_database(filters):
     sql += " ORDER BY popularity_score DESC LIMIT 5"
     results = c.execute(sql, params).fetchall()
     conn.close()
-
-    if not results:
-        print("[DEBUG] No DB matches with filters:", filters)
     return results
 
 # ---------- Generate Response ----------
 def generate_response(user_message, context=""):
     filters = {'context': context, 'keyword': user_message}
 
-    # Apply RULES
-    for keyword, rule in RULES.items():
+    # Apply generic category options
+    for keyword, categories in GENERIC_CATEGORIES.items():
         if keyword in user_message.lower():
-            filters.update(rule)
+            filters['category_options'] = categories
 
-    # Budget parsing: "under $X" or "less than X dollars"
+    # Spice / dietary tags
+    if 'spicy' in user_message.lower():
+        filters['spice_min'] = 5
+    if 'vegetarian' in user_message.lower():
+        filters['dietary_tags'] = 'vegetarian'
+    if 'vegan' in user_message.lower():
+        filters['dietary_tags'] = 'vegan'
+
+    # Budget parsing
     price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
     if not price_match:
         price_match = re.search(r'less than ([0-9]+\.?[0-9]*) ?dollars', user_message.lower())
     if price_match:
         filters['price_max'] = float(price_match.group(1))
 
-    # Query DB
     results = query_database(filters)
     product_match = bool(results)
-
-    # Interest
     interest = calculate_interest_score(user_message, product_match)
 
     # Build product info text
