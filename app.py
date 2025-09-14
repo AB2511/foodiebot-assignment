@@ -1,5 +1,5 @@
 import streamlit as st
-from chat_engine import generate_response, log_conversation, RULES
+from chat_engine import generate_response, log_conversation, RULES, query_database
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ import uuid
 st.set_page_config(page_title="FoodieBot Chat & Analytics", layout="wide")
 st.title("🍔 FoodieBot Chat & Analytics")
 
-# Track context + session
+# Track session + context
 if 'context' not in st.session_state:
     st.session_state.context = ""
     st.session_state.session_id = str(uuid.uuid4())
@@ -48,13 +48,14 @@ if not df.empty:
     # Unique dietary mentions
     dietary_mentions = set()
     for msg in df['user_message']:
-        if 'vegetarian' in msg.lower():
+        msg_lower = msg.lower()
+        if 'vegetarian' in msg_lower:
             dietary_mentions.add('vegetarian')
-        if 'vegan' in msg.lower():
+        if 'vegan' in msg_lower:
             dietary_mentions.add('vegan')
-        if 'spicy' in msg.lower():
+        if 'spicy' in msg_lower:
             dietary_mentions.add('spicy')
-        if 'curry' in msg.lower():
+        if 'curry' in msg_lower:
             dietary_mentions.add('curry')
     st.sidebar.write(f"Unique Dietary Mentions: {', '.join(dietary_mentions) if dietary_mentions else 'None'}")
 
@@ -71,7 +72,7 @@ try:
 except sqlite3.Error as e:
     st.sidebar.error(f"Error loading products: {e}. Run setup_db.py to create DB.")
 
-# ---------- Optional: Show last few matches ----------
+# ---------- Optional: Show last few queries ----------
 st.sidebar.subheader("Last 5 User Queries")
 if not df.empty:
     st.sidebar.write(df[['user_message', 'bot_response']].tail(5))
@@ -82,16 +83,15 @@ def display_products(products_list):
         st.info("No matching products found in our database. Try adjusting your query.")
         return
     for prod in products_list:
-        st.markdown(f"**{prod[1]}** (${prod[2]}) — Spice {prod[3]}/10")
+        st.markdown(f"**{prod[1]}** (${prod[2]:.2f}) — Spice {prod[3]}/10")
         st.markdown(f"{prod[4]}")
         st.markdown(f"*Tags:* {prod[5]}")
         st.markdown("---")
 
 if user_input:
     # Query DB separately to show results neatly
-    from chat_engine import query_database
     filters = {'keyword': user_input, 'context': st.session_state.context}
-    for keyword, rule in chat_engine.RULES.items():
+    for keyword, rule in RULES.items():
         if keyword in user_input.lower():
             filters.update(rule)
     products_list = query_database(filters)
