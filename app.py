@@ -9,6 +9,7 @@ st.title("FoodieBot Chat & Analytics")
 if 'context' not in st.session_state:
     st.session_state.context = ""
     st.session_state.interest = 0
+    st.session_state.turn = 0
 
 user_input = st.text_input("Chat with FoodieBot:")
 if user_input:
@@ -18,6 +19,7 @@ if user_input:
     log_conversation(user_input, response, interest)
     st.session_state.context += f"User: {user_input}\nBot: {response}\n"
     st.session_state.interest = interest
+    st.session_state.turn += 1
 
 # Analytics Sidebar
 st.sidebar.title("Analytics Dashboard")
@@ -40,7 +42,7 @@ conn.close()
 if not df.empty:
     st.sidebar.write("Interest Progression Graph:")
     fig, ax = plt.subplots()
-    ax.plot(df['interest_score'])
+    ax.plot(range(len(df['interest_score'])), df['interest_score'])  # Use turn index
     ax.set_xlabel('Conversation Turns')
     ax.set_ylabel('Interest Score')
     st.sidebar.pyplot(fig)
