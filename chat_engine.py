@@ -75,28 +75,60 @@ def calculate_interest_score(message, product_match=True):
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
-    query = "SELECT product_id, name, price, spice_level, description, dietary_tags FROM products WHERE 1=1"
+
+    conditions = []
     params = []
 
-    if 'category' in filters:
-        query += " AND category = ?"
-        params.append(filters['category'])
-    if 'price_max' in filters:
-        query += " AND price <= ?"
-        params.append(filters['price_max'])
-    if 'spice_min' in filters:
-        query += " AND spice_level >= ?"
-        params.append(filters['spice_min'])
-    if 'dietary_tags' in filters:
-        query += " AND dietary_tags LIKE ?"
-        params.append(f'%{filters["dietary_tags"]}%')
+    # Keyword search (name, category, description, tags)
+    if "keyword" in filters:
+        kw = f"%{filters['keyword'].lower()}%"
+        conditions.append("""
+            (LOWER(name) LIKE ? 
+             OR LOWER(category) LIKE ? 
+             OR LOWER(description) LIKE ? 
+             OR LOWER(dietary_tags) LIKE ? 
+             OR LOWER(mood_tags) LIKE ?)
+        """)
+        params += [kw, kw, kw, kw, kw]
 
-    # Context-aware dietary filtering
-    if 'vegetarian' in filters.get('context', '').lower() or 'vegan' in filters.get('context', '').lower():
-        query += " AND (dietary_tags LIKE ? OR dietary_tags LIKE ?)"
+    # Category filter
+    if 'category' in filters:
+        conditions.append("LOWER(category) = ?")
+        params.append(filters['category'].lower())
+
+    # Price filter
+    if 'price_max' in filters:
+        conditions.append("price <= ?")
+        params.append(filters['price_max'])
+
+    # Spice filter
+    if 'spice_min' in filters:
+        conditions.append("spice_level >= ?")
+        params.append(filters['spice_min'])
+
+    # Dietary filter
+    if 'dietary_tags' in filters:
+        conditions.append("LOWER(dietary_tags) LIKE ?")
+        params.append(f"%{filters['dietary_tags'].lower()}%")
+
+    # Context-aware vegetarian/vegan detection
+    if 'context' in filters and (
+        'vegetarian' in filters['context'].lower() or 
+        'vegan' in filters['context'].lower()
+    ):
+        conditions.append("(dietary_tags LIKE ? OR dietary_tags LIKE ?)")
         params.extend(['%vegetarian%', '%vegan%'])
 
+    # Build final query
+    query = """
+        SELECT product_id, name, price, spice_level, description, dietary_tags 
+        FROM products
+    """
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
     query += " ORDER BY popularity_score DESC LIMIT 3"
+
     results = c.execute(query, params).fetchall()
     conn.close()
 
