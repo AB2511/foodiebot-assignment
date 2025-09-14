@@ -42,7 +42,7 @@ conn.close()
 if not df.empty:
     st.sidebar.write("Interest Progression Graph:")
     fig, ax = plt.subplots()
-    ax.plot(range(len(df)), df['interest_score'])  # Use range for turns
+    ax.plot(range(1, len(df) + 1), df['interest_score'])  # Use range for turns, starting at 1
     ax.set_xlabel('Conversation Turns')
     ax.set_ylabel('Interest Score')
     st.sidebar.pyplot(fig)
@@ -68,7 +68,8 @@ st.sidebar.title("Product Admin")
 try:
     conn = sqlite3.connect('foodiebot.db')
     products_df = pd.read_sql_query("SELECT * FROM products", conn)
+    st.write("Products in DB:", products_df)  # Debug database content
     conn.close()
     st.sidebar.dataframe(products_df)
 except sqlite3.Error as e:
-    st.sidebar.write("Error loading products: Database or table 'products' may not be initialized. Run setup_db.py locally to create it.")
+    st.sidebar.write(f"Error loading products: {e}. Database or table 'products' may not be initialized. Run setup_db.py locally to create it.")
