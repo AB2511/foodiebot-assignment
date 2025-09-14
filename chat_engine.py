@@ -3,10 +3,10 @@ import sqlite3
 import re
 from typing import Dict, Any, List, Tuple
 
-# ------------ RULES: normalized keyword => DB category or filter ------------
-# Keep these tuned to the categories you have (extracted earlier).
+DB_PATH = "foodiebot.db"
+
+# ------- RULES: normalized keyword -> DB hints -------
 RULES = {
-    # generic -> category (we use LIKE so exact casing doesn't matter)
     "burger": {"category": "Burger"},
     "burgers": {"category": "Burger"},
     "classic burger": {"category": "Classic Burgers"},
@@ -23,20 +23,18 @@ RULES = {
     "salad": {"category": "Salads"},
     "salads": {"category": "Salads"},
     "sandwich": {"category": "Sandwich"},
-    "fried chicken": {"category": "Fried Chicken"},
     "appetizer": {"category": "Appetizer"},
     "side": {"category": "Sides & Appetizers"},
     "dessert": {"category": "Dessert"},
     "shake": {"category": "Shake"},
-    # tags/filters
     "spicy": {"spice_min": 5},
+    "extra spicy": {"spice_min": 8},
     "mild": {"spice_min": 0},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
-    "gluten-free": {"dietary_tags": "gluten-free"},
 }
 
-# ------------ Scoring config ------------
+# ------- Scoring (kept simple and deterministic) -------
 ENGAGEMENT_FACTORS = {
     'specific_preferences': 15,
     'dietary_restrictions': 10,
@@ -54,6 +52,32 @@ NEGATIVE_FACTORS = {
     'rejection': -25,
     'delay_response': -5,
 }
+
+def _connect():
+    return sqlite3.connect(DB_PATH)
+
+def _normalize_text_for_keyword(s: str) -> str:
+    if not s:
+        return ""
+    s = s.lower()
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+def _parse_budget_from_text(text: str):
+    t = text.lower()
+    # under $X
+    m = re.search(r'under \$\s*([0-9]+(?:\.[0-9]+)?)', t)
+    if not m:
+        m = re.search(r'less than\s+([0-9]+(?:\.[0-9]+)?)\s*dollars', t)
+    if not m:
+        m = re.search(r'<\s*([0-9]+(?:\.[0-9]+)?)', t)
+    if m:
+        try:
+            return float(m.group(1))
+        except:
+            return None
+    return None
 
 def calculate_interest_score(message: str, product_match: bool = True) -> int:
     m = message.lower()
@@ -86,32 +110,22 @@ def calculate_interest_score(message: str, product_match: bool = True) -> int:
 
     return max(0, min(100, score))
 
-# ------------ DB Query helper ------------
-DB_PATH = "foodiebot.db"
-
-def _connect():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = lambda cursor, row: tuple(row)  # simple tuple rows
-    return conn
-
+# ---------------- DB query ----------------
 def query_database(filters: Dict[str, Any]) -> List[Tuple]:
     """
-    Accepts filters dict keys:
+    filters keys:
       - keyword (string)
-      - category (string)  (will be used with LIKE)
+      - category (string)
       - price_max (float)
       - spice_min (int)
       - dietary_tags (string)
       - context (string)
-    Returns list of rows (product_id, name, category, price, spice_level, description, dietary_tags)
     """
     conn = _connect()
     c = conn.cursor()
-
     conditions = []
     params = []
 
-    # keyword fallback searches key text fields
     if filters.get("keyword"):
         kw = "%" + filters["keyword"].lower() + "%"
         conditions.append("""(
@@ -123,27 +137,22 @@ def query_database(filters: Dict[str, Any]) -> List[Tuple]:
         )""")
         params += [kw, kw, kw, kw, kw]
 
-    # category (LIKE)
     if filters.get("category"):
         conditions.append("LOWER(category) LIKE ?")
         params.append("%" + filters["category"].lower() + "%")
 
-    # price_max
     if filters.get("price_max") is not None:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
 
-    # spice_min
     if filters.get("spice_min") is not None:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
 
-    # dietary_tags
     if filters.get("dietary_tags"):
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append("%" + filters["dietary_tags"].lower() + "%")
 
-    # context-aware vegetarian/vegan (if present)
     if filters.get("context"):
         ctx = filters["context"].lower()
         if "vegetarian" in ctx or "vegan" in ctx:
@@ -160,29 +169,7 @@ def query_database(filters: Dict[str, Any]) -> List[Tuple]:
     conn.close()
     return rows
 
-# ------------ Generate response (no LLM used for formatting) ------------
-def _normalize_text_for_keyword(s: str) -> str:
-    if not s:
-        return ""
-    s = s.lower()
-    s = re.sub(r"[^a-z0-9\s]", " ", s)
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
-def _parse_budget_from_text(text: str):
-    t = text.lower()
-    m = re.search(r'under \$\s*([0-9]+(?:\.[0-9]+)?)', t)
-    if not m:
-        m = re.search(r'less than\s+([0-9]+(?:\.[0-9]+)?)\s*dollars', t)
-    if not m:
-        m = re.search(r'<\s*([0-9]+(?:\.[0-9]+)?)', t)
-    if m:
-        try:
-            return float(m.group(1))
-        except:
-            return None
-    return None
-
+# ---------------- Response generation ----------------
 def generate_response(user_message: str, context: str = "") -> Tuple[str, int]:
     """
     Returns (response_text, interest_score)
@@ -190,7 +177,7 @@ def generate_response(user_message: str, context: str = "") -> Tuple[str, int]:
     clean = _normalize_text_for_keyword(user_message)
     filters: Dict[str, Any] = {"keyword": clean, "context": context}
 
-    # apply RULES: check for rule keys in normalized string
+    # apply RULES
     for k, rule in RULES.items():
         if k in clean:
             filters.update(rule)
@@ -200,42 +187,49 @@ def generate_response(user_message: str, context: str = "") -> Tuple[str, int]:
     if price_max is not None:
         filters["price_max"] = price_max
 
-    # Spice words like "extra spicy" bump spice_min a bit
+    # spice boost for "extra spicy"
     if "extra spicy" in user_message.lower():
         filters["spice_min"] = max(filters.get("spice_min", 0), 7)
 
-    # query DB
     results = query_database(filters)
     product_match = len(results) > 0
 
-    # compute interest AFTER knowing whether matches exist
     interest = calculate_interest_score(user_message, product_match)
 
-    # build reply text (clean, grouped by category)
     if not product_match:
-        reply = "No matching products found in our database. What else can I help with?"
-        return reply, interest
+        return "No matching products found in our database. What else can I help with?", interest
 
-    # group by category
+    # group by category for readability
     grouped = {}
     for r in results:
         pid, name, category, price, spice, desc, tags = r
-        grouped.setdefault(category or "Other", []).append({
-            "name": name,
-            "price": price,
-            "spice": spice,
-            "desc": desc,
-            "tags": tags
-        })
+        grouped.setdefault(category or "Other", []).append((name, price, spice, desc, tags))
 
-    # create readable response
     lines = ["Here are some recommendations from our database:"]
     for cat, items in grouped.items():
         lines.append(f"\n{cat}:")
-        for it in items:
-            desc_short = (it["desc"][:220] + "...") if it["desc"] and len(it["desc"]) > 220 else (it["desc"] or "")
-            tag_str = f" (Tags: {it['tags']})" if it.get("tags") else ""
-            lines.append(f"- {it['name']}: ${it['price']:.2f}, Spice {it['spice']}/10 - {desc_short}{tag_str}")
+        for name, price, spice, desc, tags in items:
+            desc_short = (desc[:220] + "...") if desc and len(desc) > 220 else (desc or "")
+            tag_str = f" (Tags: {tags})" if tags else ""
+            lines.append(f"- {name}: ${price:.2f}, Spice {spice}/10 - {desc_short}{tag_str}")
 
     reply = "\n".join(lines)
     return reply, interest
+
+# ---------------- Logging ----------------
+def log_conversation(user_message: str, response: str, interest: int):
+    conn = _connect()
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS conversations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_message TEXT,
+            bot_response TEXT,
+            interest_score INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    c.execute("INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
+              (user_message, response, int(interest)))
+    conn.commit()
+    conn.close()
