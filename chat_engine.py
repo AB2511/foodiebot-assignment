@@ -47,7 +47,7 @@ def calculate_interest_score(message, product_match=True):
     if any(phrase in message.lower() for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
-    # Negative factors
+    # Negative factors (apply cumulatively)
     if any(word in message.lower() for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in message.lower():
@@ -57,7 +57,7 @@ def calculate_interest_score(message, product_match=True):
     if "don't like" in message.lower() or "not interested" in message.lower():
         score += NEGATIVE_FACTORS['rejection']
 
-    return max(0, min(100, score))
+    return max(0, min(100, score))  # Cap between 0 and 100
 
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
@@ -89,11 +89,10 @@ def generate_response(user_message, context=""):
     filters = {'context': context}  
     if 'spicy' in user_message.lower() or 'curry' in user_message.lower():
         filters['spice_min'] = 5
-        filters['dietary_tags'] = 'spicy'  # Note: 'spicy' might not be a valid tag; use context instead
     if 'under $10' in user_message.lower():
         filters['price_max'] = 10
     if 'vegetarian' in user_message.lower() or 'vegan' in user_message.lower():
-        filters['dietary_tags'] = 'vegetarian' 
+        filters['dietary_tags'] = 'vegetarian'
 
     results = query_database(filters)
     product_match = bool(results)
@@ -106,8 +105,8 @@ def generate_response(user_message, context=""):
     User: {user_message}.
     Recommend ONLY from these exact database products: {product_info}.
     If no matches, say exactly: "No matching products found in our database. What else can I help with?"
-    Do NOT suggest, mention, or invent any items not listed in the products above. Stick strictly to the provided data.
-    Keep natural dialogue, extract preferences, maintain memory, and recommend based on mood/diet/budget.
+    Do NOT suggest, mention, or invent any items not explicitly listed in the products above. Adhere strictly to the provided data only.
+    Keep natural dialogue, extract preferences, maintain memory, and recommend based on mood/diet/budget/spice level.
     """
     response = model.generate_content(
         prompt,
