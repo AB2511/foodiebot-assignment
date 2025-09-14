@@ -1,19 +1,42 @@
+# chat_engine.py
 import sqlite3
 import re
+from typing import Dict, Any, List, Tuple
 
-# ---------- Keyword → DB rules ----------
+# ------------ RULES: normalized keyword => DB category or filter ------------
+# Keep these tuned to the categories you have (extracted earlier).
 RULES = {
-    "burger": {"category": "Burgers"},
+    # generic -> category (we use LIKE so exact casing doesn't matter)
+    "burger": {"category": "Burger"},
+    "burgers": {"category": "Burger"},
+    "classic burger": {"category": "Classic Burgers"},
+    "fusion burger": {"category": "Fusion Burgers"},
+    "vegetarian burger": {"category": "Vegetarian Burgers"},
     "pizza": {"category": "Pizza"},
-    "wrap": {"category": "Wraps"},
-    "taco": {"category": "Tacos & Wraps"},
-    "salad": {"category": "Salads & Healthy Options"},
+    "personal pizza": {"category": "Personal Pizza"},
+    "traditional pizza": {"category": "Traditional Pizza"},
+    "gourmet pizza": {"category": "Gourmet Pizza"},
+    "wrap": {"category": "Wrap"},
+    "wraps": {"category": "Wrap"},
+    "taco": {"category": "Tacos"},
+    "tacos": {"category": "Tacos"},
+    "salad": {"category": "Salads"},
+    "salads": {"category": "Salads"},
+    "sandwich": {"category": "Sandwich"},
+    "fried chicken": {"category": "Fried Chicken"},
+    "appetizer": {"category": "Appetizer"},
+    "side": {"category": "Sides & Appetizers"},
+    "dessert": {"category": "Dessert"},
+    "shake": {"category": "Shake"},
+    # tags/filters
     "spicy": {"spice_min": 5},
+    "mild": {"spice_min": 0},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
+    "gluten-free": {"dietary_tags": "gluten-free"},
 }
 
-# ---------- Interest Factors ----------
+# ------------ Scoring config ------------
 ENGAGEMENT_FACTORS = {
     'specific_preferences': 15,
     'dietary_restrictions': 10,
@@ -24,7 +47,6 @@ ENGAGEMENT_FACTORS = {
     'price_inquiry': 25,
     'order_intent': 30,
 }
-
 NEGATIVE_FACTORS = {
     'hesitation': -10,
     'budget_concern': -15,
@@ -33,130 +55,187 @@ NEGATIVE_FACTORS = {
     'delay_response': -5,
 }
 
-# ---------- Interest Score ----------
-def calculate_interest_score(message, product_match=True):
-    score = 0
+def calculate_interest_score(message: str, product_match: bool = True) -> int:
     m = message.lower()
-    if any(word in m for word in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
+    score = 0
+    if any(w in m for w in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in m or 'vegan' in m:
         score += ENGAGEMENT_FACTORS['dietary_restrictions']
-    if 'under $' in m or 'less than' in m:
+    if re.search(r'under \$\d+|less than \d+|<\s*\d+', m):
         score += ENGAGEMENT_FACTORS['budget_mention']
     if 'adventurous' in m:
         score += ENGAGEMENT_FACTORS['mood_indication']
     if '?' in message:
         score += ENGAGEMENT_FACTORS['question_asking']
-    if any(word in m for word in ['amazing', 'perfect', 'love']):
+    if any(w in m for w in ['amazing', 'perfect', 'love']):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
-    if 'how much' in m:
+    if 'how much' in m or 'price' in m:
         score += ENGAGEMENT_FACTORS['price_inquiry']
-    if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
+    if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart", "i want to order"]):
         score += ENGAGEMENT_FACTORS['order_intent']
-    if any(word in m for word in ['maybe', 'not sure']):
+
+    if any(w in m for w in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
-    if 'too expensive' in m:
+    if 'too expensive' in m or 'not worth' in m:
         score += NEGATIVE_FACTORS['budget_concern']
-    if not product_match and any(word in m for word in ['spicy', 'vegetarian', 'vegan', 'burger', 'pizza']):
+    if not product_match and any(w in m for w in ['spicy', 'vegetarian', 'vegan', 'burger', 'pizza', 'wrap']):
         score += NEGATIVE_FACTORS['dietary_conflict']
     if "don't like" in m or "not interested" in m:
         score += NEGATIVE_FACTORS['rejection']
+
     return max(0, min(100, score))
 
-# ---------- Query Database ----------
-def query_database(filters):
-    conn = sqlite3.connect('foodiebot.db')
+# ------------ DB Query helper ------------
+DB_PATH = "foodiebot.db"
+
+def _connect():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = lambda cursor, row: tuple(row)  # simple tuple rows
+    return conn
+
+def query_database(filters: Dict[str, Any]) -> List[Tuple]:
+    """
+    Accepts filters dict keys:
+      - keyword (string)
+      - category (string)  (will be used with LIKE)
+      - price_max (float)
+      - spice_min (int)
+      - dietary_tags (string)
+      - context (string)
+    Returns list of rows (product_id, name, category, price, spice_level, description, dietary_tags)
+    """
+    conn = _connect()
     c = conn.cursor()
+
     conditions = []
     params = []
 
-    if "keyword" in filters:
-        kw = f"%{filters['keyword'].lower()}%"
+    # keyword fallback searches key text fields
+    if filters.get("keyword"):
+        kw = "%" + filters["keyword"].lower() + "%"
         conditions.append("""(
             LOWER(name) LIKE ? OR
             LOWER(category) LIKE ? OR
             LOWER(description) LIKE ? OR
-            LOWER(dietary_tags) LIKE ?
+            LOWER(dietary_tags) LIKE ? OR
+            LOWER(mood_tags) LIKE ?
         )""")
-        params += [kw]*4
+        params += [kw, kw, kw, kw, kw]
 
-    if 'category' in filters:
+    # category (LIKE)
+    if filters.get("category"):
         conditions.append("LOWER(category) LIKE ?")
-        params.append(f"%{filters['category'].lower()}%")
-    if "price_max" in filters:
+        params.append("%" + filters["category"].lower() + "%")
+
+    # price_max
+    if filters.get("price_max") is not None:
         conditions.append("price <= ?")
         params.append(filters["price_max"])
-    if "spice_min" in filters:
+
+    # spice_min
+    if filters.get("spice_min") is not None:
         conditions.append("spice_level >= ?")
         params.append(filters["spice_min"])
-    if "dietary_tags" in filters:
-        conditions.append("LOWER(dietary_tags) LIKE ?")
-        params.append(f"%{filters['dietary_tags'].lower()}%")
 
-    sql = "SELECT product_id, name, category, price, spice_level, description, dietary_tags FROM products"
+    # dietary_tags
+    if filters.get("dietary_tags"):
+        conditions.append("LOWER(dietary_tags) LIKE ?")
+        params.append("%" + filters["dietary_tags"].lower() + "%")
+
+    # context-aware vegetarian/vegan (if present)
+    if filters.get("context"):
+        ctx = filters["context"].lower()
+        if "vegetarian" in ctx or "vegan" in ctx:
+            conditions.append("(LOWER(dietary_tags) LIKE ? OR LOWER(dietary_tags) LIKE ?)")
+            params += ["%vegetarian%", "%vegan%"]
+
+    sql = ("SELECT product_id, name, category, price, spice_level, description, dietary_tags "
+           "FROM products")
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
-    sql += " ORDER BY popularity_score DESC LIMIT 10"
+    sql += " ORDER BY popularity_score DESC LIMIT 12"
 
-    results = c.execute(sql, params).fetchall()
+    rows = c.execute(sql, params).fetchall()
     conn.close()
-    return results
+    return rows
 
-# ---------- Log Conversation ----------
-def log_conversation(user_message, response, interest):
-    conn = sqlite3.connect('foodiebot.db')
-    c = conn.cursor()
-    c.execute('''
-    CREATE TABLE IF NOT EXISTS conversations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_message TEXT,
-        bot_response TEXT,
-        interest_score INTEGER,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )''')
-    c.execute(
-        "INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
-        (user_message, response, interest)
-    )
-    conn.commit()
-    conn.close()
+# ------------ Generate response (no LLM used for formatting) ------------
+def _normalize_text_for_keyword(s: str) -> str:
+    if not s:
+        return ""
+    s = s.lower()
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
 
-# ---------- Generate Response ----------
-def generate_response(user_message, context=""):
-    # Normalize user input
-    m = user_message.lower()
-    normalized = re.sub(r'[^a-z0-9\s]', '', m)
-    normalized = re.sub(r'\b(show me|i want|give me|please)\b', '', normalized)
-    normalized = normalized.strip()
+def _parse_budget_from_text(text: str):
+    t = text.lower()
+    m = re.search(r'under \$\s*([0-9]+(?:\.[0-9]+)?)', t)
+    if not m:
+        m = re.search(r'less than\s+([0-9]+(?:\.[0-9]+)?)\s*dollars', t)
+    if not m:
+        m = re.search(r'<\s*([0-9]+(?:\.[0-9]+)?)', t)
+    if m:
+        try:
+            return float(m.group(1))
+        except:
+            return None
+    return None
 
-    filters = {'context': context, 'keyword': normalized}
+def generate_response(user_message: str, context: str = "") -> Tuple[str, int]:
+    """
+    Returns (response_text, interest_score)
+    """
+    clean = _normalize_text_for_keyword(user_message)
+    filters: Dict[str, Any] = {"keyword": clean, "context": context}
 
-    for keyword, rule in RULES.items():
-        if keyword in normalized:
+    # apply RULES: check for rule keys in normalized string
+    for k, rule in RULES.items():
+        if k in clean:
             filters.update(rule)
 
-    price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
-    if price_match:
-        filters['price_max'] = float(price_match.group(1))
+    # budget parsing
+    price_max = _parse_budget_from_text(user_message)
+    if price_max is not None:
+        filters["price_max"] = price_max
 
+    # Spice words like "extra spicy" bump spice_min a bit
+    if "extra spicy" in user_message.lower():
+        filters["spice_min"] = max(filters.get("spice_min", 0), 7)
+
+    # query DB
     results = query_database(filters)
-    product_match = bool(results)
+    product_match = len(results) > 0
+
+    # compute interest AFTER knowing whether matches exist
     interest = calculate_interest_score(user_message, product_match)
 
-    if not results:
-        response = "No matching products found in our database. What else can I help with?"
-    else:
-        sections = {}
-        for r in results:
-            cat = r[2]
-            if cat not in sections:
-                sections[cat] = []
-            sections[cat].append(f"{r[1]}: ${r[3]}, Spice {r[4]}/10 - {r[5]} (Tags: {r[6]})")
+    # build reply text (clean, grouped by category)
+    if not product_match:
+        reply = "No matching products found in our database. What else can I help with?"
+        return reply, interest
 
-        response_lines = ["Here are some recommendations from our database:"]
-        for cat, items in sections.items():
-            response_lines.append(f"\n{cat}:")
-            response_lines.extend(items)
-        response = "\n".join(response_lines)
+    # group by category
+    grouped = {}
+    for r in results:
+        pid, name, category, price, spice, desc, tags = r
+        grouped.setdefault(category or "Other", []).append({
+            "name": name,
+            "price": price,
+            "spice": spice,
+            "desc": desc,
+            "tags": tags
+        })
 
-    return response, interest
+    # create readable response
+    lines = ["Here are some recommendations from our database:"]
+    for cat, items in grouped.items():
+        lines.append(f"\n{cat}:")
+        for it in items:
+            desc_short = (it["desc"][:220] + "...") if it["desc"] and len(it["desc"]) > 220 else (it["desc"] or "")
+            tag_str = f" (Tags: {it['tags']})" if it.get("tags") else ""
+            lines.append(f"- {it['name']}: ${it['price']:.2f}, Spice {it['spice']}/10 - {desc_short}{tag_str}")
+
+    reply = "\n".join(lines)
+    return reply, interest
