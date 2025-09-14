@@ -137,30 +137,45 @@ def query_database(filters):
     return results
 
 def generate_response(user_message, context=""):
-    # Step 1: Build filters from RULES
+    m = user_message.lower()
     filters = {'context': context}
+
+    # Step 1: Apply RULES
     for keyword, rule in RULES.items():
-        if keyword in user_message.lower():
+        if keyword in m:
             filters.update(rule)
 
-    # Step 2: Extract budget
-    if 'under $' in user_message.lower():
-        for word in user_message.lower().split():
-            if word.startswith('$'):
-                try:
-                    filters['price_max'] = float(word[1:])
-                    break
-                except ValueError:
-                    pass
+    # Step 2: Budget extraction (handle "under $10", "less than 8 dollars", etc.)
+    import re
+    money_match = re.search(r'(\d+(\.\d{1,2})?)\s*(dollars|\$)', m)
+    if "under $" in m or "less than" in m or money_match:
+        num_match = re.search(r'\d+(\.\d{1,2})?', m)
+        if num_match:
+            filters['price_max'] = float(num_match.group())
 
-    # Step 3: Query DB
+    # Step 3: Extra keywords → keyword search (fallback if no category matched)
+    keywords = ["burger", "pizza", "wrap", "taco", "salad", "curry", "sandwich", "pasta"]
+    for kw in keywords:
+        if kw in m:
+            filters['keyword'] = kw
+            break  # use the first relevant one
+
+    # Step 4: Spice preference (catch "extra spicy", "mild", etc.)
+    if "extra spicy" in m or "very spicy" in m:
+        filters['spice_min'] = 7
+    elif "spicy" in m:
+        filters['spice_min'] = 5
+    elif "mild" in m:
+        filters['spice_min'] = 1
+
+    # Step 5: Query DB
     results = query_database(filters)
     product_match = bool(results)
 
-    # Step 4: Recalculate interest *after* DB results
+    # Step 6: Recalculate interest
     interest = calculate_interest_score(user_message, product_match)
 
-    # Step 5: Build response
+    # Step 7: Build response
     if not results:
         product_info = "No matches found."
     else:
