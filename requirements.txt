@@ -1,0 +1,7 @@
+google-generativeai
+streamlit
+pandas
+matplotlib
+sqlite3
+python-dotenv
+pydantic
