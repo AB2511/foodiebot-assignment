@@ -29,7 +29,7 @@ NEGATIVE_FACTORS = {
 def calculate_interest_score(message, product_match=True):
     score = 0
     # Engagement factors
-    if any(word in message.lower() for word in ['love', 'spicy', 'korean', 'fusion']):
+    if any(word in message.lower() for word in ['love', 'spicy', 'korean', 'fusion', 'burger']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in message.lower() or 'vegan' in message.lower():
         score += ENGAGEMENT_FACTORS['dietary_restrictions']
@@ -52,7 +52,7 @@ def calculate_interest_score(message, product_match=True):
         score += NEGATIVE_FACTORS['hesitation']
     if 'too expensive' in message.lower():
         score += NEGATIVE_FACTORS['budget_concern']
-    if not product_match and any(word in message.lower() for word in ['spicy', 'vegetarian', 'vegan']):
+    if not product_match and any(word in message.lower() for word in ['spicy', 'vegetarian', 'vegan', 'burger']):
         score += NEGATIVE_FACTORS['dietary_conflict']  # Apply only if preference exists
     if "don't like" in message.lower() or "not interested" in message.lower():
         score += NEGATIVE_FACTORS['rejection']
@@ -82,6 +82,7 @@ def query_database(filters):
     query += " ORDER BY popularity_score DESC LIMIT 3"
     results = c.execute(query, params).fetchall()
     conn.close()
+    print(f"Query results: {results}")  # Debug database output
     return results
 
 def generate_response(user_message, context=""):
@@ -99,6 +100,8 @@ def generate_response(user_message, context=""):
                     pass
     if 'vegetarian' in user_message.lower() or 'vegan' in user_message.lower():
         filters['dietary_tags'] = 'vegetarian'
+    if 'burger' in user_message.lower():
+        filters['category'] = 'burger'  # Add burger category filter
 
     results = query_database(filters)
     product_match = bool(results)
