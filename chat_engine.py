@@ -2,11 +2,14 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 import sqlite3
+import re
 
+# Load API key
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-1.5-flash')
 
+# Engagement / negative scoring
 ENGAGEMENT_FACTORS = {
     'specific_preferences': 15,
     'dietary_restrictions': 10,
@@ -26,18 +29,19 @@ NEGATIVE_FACTORS = {
     'delay_response': -5,
 }
 
-# 🔑 Mapping user words → DB filters
+# Normalized keyword → DB filter rules
 RULES = {
-    "burger": {"category": "Burgers"},
+    "burger": {"category": "Burger"},
     "pizza": {"category": "Pizza"},
-    "wrap": {"category": "Tacos & Wraps"},
+    "wrap": {"category": "Wraps"},
     "taco": {"category": "Tacos & Wraps"},
-    "salad": {"category": "Salads & Healthy Options"},
+    "salad": {"category": "Salads"},
     "spicy": {"spice_min": 5},
     "vegetarian": {"dietary_tags": "vegetarian"},
     "vegan": {"dietary_tags": "vegan"},
 }
 
+# ---------- Interest Score ----------
 def calculate_interest_score(message, product_match=True):
     score = 0
     m = message.lower()
@@ -47,7 +51,7 @@ def calculate_interest_score(message, product_match=True):
         score += ENGAGEMENT_FACTORS['specific_preferences']
     if 'vegetarian' in m or 'vegan' in m:
         score += ENGAGEMENT_FACTORS['dietary_restrictions']
-    if 'under $' in m:
+    if 'under $' in m or 'less than' in m:
         score += ENGAGEMENT_FACTORS['budget_mention']
     if 'adventurous' in m:
         score += ENGAGEMENT_FACTORS['mood_indication']
@@ -72,6 +76,7 @@ def calculate_interest_score(message, product_match=True):
 
     return max(0, min(100, score))
 
+# ---------- Database Query ----------
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
@@ -79,103 +84,85 @@ def query_database(filters):
     conditions = []
     params = []
 
-    # Keyword search (name, category, description, tags)
+    # Keyword search fallback
     if "keyword" in filters:
         kw = f"%{filters['keyword'].lower()}%"
-        conditions.append("""
-            (LOWER(name) LIKE ? 
-             OR LOWER(category) LIKE ? 
-             OR LOWER(description) LIKE ? 
-             OR LOWER(dietary_tags) LIKE ? 
-             OR LOWER(mood_tags) LIKE ?)
-        """)
+        conditions.append("""(
+            LOWER(name) LIKE ? OR
+            LOWER(category) LIKE ? OR
+            LOWER(description) LIKE ? OR
+            LOWER(dietary_tags) LIKE ? OR
+            LOWER(mood_tags) LIKE ?
+        )""")
         params += [kw, kw, kw, kw, kw]
 
-    # Category filter
+    # Category filter (LIKE instead of exact match)
     if 'category' in filters:
-        conditions.append("LOWER(category) = ?")
-        params.append(filters['category'].lower())
+        conditions.append("LOWER(category) LIKE ?")
+        params.append(f"%{filters['category'].lower()}%")
 
-    # Price filter
-    if 'price_max' in filters:
+    # Max price filter
+    if "price_max" in filters:
         conditions.append("price <= ?")
-        params.append(filters['price_max'])
+        params.append(filters["price_max"])
 
     # Spice filter
-    if 'spice_min' in filters:
+    if "spice_min" in filters:
         conditions.append("spice_level >= ?")
-        params.append(filters['spice_min'])
+        params.append(filters["spice_min"])
 
     # Dietary filter
-    if 'dietary_tags' in filters:
+    if "dietary_tags" in filters:
         conditions.append("LOWER(dietary_tags) LIKE ?")
         params.append(f"%{filters['dietary_tags'].lower()}%")
 
-    # Context-aware vegetarian/vegan detection
+    # Context-aware vegetarian/vegan
     if 'context' in filters and (
-        'vegetarian' in filters['context'].lower() or 
+        'vegetarian' in filters['context'].lower() or
         'vegan' in filters['context'].lower()
     ):
         conditions.append("(dietary_tags LIKE ? OR dietary_tags LIKE ?)")
         params.extend(['%vegetarian%', '%vegan%'])
 
-    # Build final query
-    query = """
-        SELECT product_id, name, price, spice_level, description, dietary_tags 
+    sql = """
+        SELECT product_id, name, price, spice_level, description, dietary_tags
         FROM products
     """
     if conditions:
-        query += " WHERE " + " AND ".join(conditions)
+        sql += " WHERE " + " AND ".join(conditions)
 
-    query += " ORDER BY popularity_score DESC LIMIT 3"
-
-    results = c.execute(query, params).fetchall()
+    sql += " ORDER BY popularity_score DESC LIMIT 5"
+    results = c.execute(sql, params).fetchall()
     conn.close()
 
     if not results:
         print("[DEBUG] No DB matches with filters:", filters)
     return results
 
+# ---------- Response Generation ----------
 def generate_response(user_message, context=""):
-    m = user_message.lower()
-    filters = {'context': context}
+    filters = {'context': context, 'keyword': user_message}
 
-    # Step 1: Apply RULES
+    # Apply RULES
     for keyword, rule in RULES.items():
-        if keyword in m:
+        if keyword in user_message.lower():
             filters.update(rule)
 
-    # Step 2: Budget extraction (handle "under $10", "less than 8 dollars", etc.)
-    import re
-    money_match = re.search(r'(\d+(\.\d{1,2})?)\s*(dollars|\$)', m)
-    if "under $" in m or "less than" in m or money_match:
-        num_match = re.search(r'\d+(\.\d{1,2})?', m)
-        if num_match:
-            filters['price_max'] = float(num_match.group())
+    # Parse budgets: "under $X" or "less than X dollars"
+    price_match = re.search(r'under \$([0-9]+\.?[0-9]*)', user_message.lower())
+    if not price_match:
+        price_match = re.search(r'less than ([0-9]+\.?[0-9]*) ?dollars', user_message.lower())
+    if price_match:
+        filters['price_max'] = float(price_match.group(1))
 
-    # Step 3: Extra keywords → keyword search (fallback if no category matched)
-    keywords = ["burger", "pizza", "wrap", "taco", "salad", "curry", "sandwich", "pasta"]
-    for kw in keywords:
-        if kw in m:
-            filters['keyword'] = kw
-            break  # use the first relevant one
-
-    # Step 4: Spice preference (catch "extra spicy", "mild", etc.)
-    if "extra spicy" in m or "very spicy" in m:
-        filters['spice_min'] = 7
-    elif "spicy" in m:
-        filters['spice_min'] = 5
-    elif "mild" in m:
-        filters['spice_min'] = 1
-
-    # Step 5: Query DB
+    # Query DB
     results = query_database(filters)
     product_match = bool(results)
 
-    # Step 6: Recalculate interest
+    # Interest
     interest = calculate_interest_score(user_message, product_match)
 
-    # Step 7: Build response
+    # Build response
     if not results:
         product_info = "No matches found."
     else:
@@ -196,8 +183,10 @@ def generate_response(user_message, context=""):
         prompt,
         generation_config={"temperature": 0.6, "max_output_tokens": 250}
     ).text
+
     return response, interest
 
+# ---------- Log Conversation ----------
 def log_conversation(user_message, response, interest):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
@@ -210,18 +199,9 @@ def log_conversation(user_message, response, interest):
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     ''')
-    c.execute("INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
-              (user_message, response, interest))
+    c.execute(
+        "INSERT INTO conversations (user_message, bot_response, interest_score) VALUES (?, ?, ?)",
+        (user_message, response, interest)
+    )
     conn.commit()
     conn.close()
-
-if __name__ == "__main__":
-    context = ""
-    while True:
-        user = input("User: ")
-        if user.lower() == 'exit':
-            break
-        resp, score = generate_response(user, context)
-        print(f"Bot: {resp} (Interest: {score}%)")
-        log_conversation(user, resp, score)
-        context += f"User: {user}\nBot: {resp}\n"
