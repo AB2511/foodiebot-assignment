@@ -26,44 +26,58 @@ NEGATIVE_FACTORS = {
     'delay_response': -5,
 }
 
+# 🔑 Mapping user words → DB filters
+RULES = {
+    "burger": {"category": "Burgers"},
+    "pizza": {"category": "Pizza"},
+    "wrap": {"category": "Tacos & Wraps"},
+    "taco": {"category": "Tacos & Wraps"},
+    "salad": {"category": "Salads & Healthy Options"},
+    "spicy": {"spice_min": 5},
+    "vegetarian": {"dietary_tags": "vegetarian"},
+    "vegan": {"dietary_tags": "vegan"},
+}
+
 def calculate_interest_score(message, product_match=True):
     score = 0
+    m = message.lower()
+
     # Engagement factors
-    if any(word in message.lower() for word in ['love', 'spicy', 'korean', 'fusion', 'burger']):
+    if any(word in m for word in ['love', 'spicy', 'korean', 'fusion', 'burger', 'pizza', 'wrap']):
         score += ENGAGEMENT_FACTORS['specific_preferences']
-    if 'vegetarian' in message.lower() or 'vegan' in message.lower():
+    if 'vegetarian' in m or 'vegan' in m:
         score += ENGAGEMENT_FACTORS['dietary_restrictions']
-    if 'under $' in message.lower():
+    if 'under $' in m:
         score += ENGAGEMENT_FACTORS['budget_mention']
-    if 'adventurous' in message.lower():
+    if 'adventurous' in m:
         score += ENGAGEMENT_FACTORS['mood_indication']
     if '?' in message:
         score += ENGAGEMENT_FACTORS['question_asking']
-    if any(word in message.lower() for word in ['amazing', 'perfect', 'love']):
+    if any(word in m for word in ['amazing', 'perfect', 'love']):
         score += ENGAGEMENT_FACTORS['enthusiasm_words']
-    if 'how much' in message.lower():
+    if 'how much' in m:
         score += ENGAGEMENT_FACTORS['price_inquiry']
-    # Enhanced order intent detection
-    if any(phrase in message.lower() for phrase in ["i'll take", "i will take", "order", "add to cart"]):
+    if any(phrase in m for phrase in ["i'll take", "i will take", "order", "add to cart"]):
         score += ENGAGEMENT_FACTORS['order_intent']
 
-    # Negative factors (apply cumulatively)
-    if any(word in message.lower() for word in ['maybe', 'not sure']):
+    # Negative factors
+    if any(word in m for word in ['maybe', 'not sure']):
         score += NEGATIVE_FACTORS['hesitation']
-    if 'too expensive' in message.lower():
+    if 'too expensive' in m:
         score += NEGATIVE_FACTORS['budget_concern']
-    if not product_match and any(word in message.lower() for word in ['spicy', 'vegetarian', 'vegan', 'burger']):
-        score += NEGATIVE_FACTORS['dietary_conflict']  # Apply only if preference exists
-    if "don't like" in message.lower() or "not interested" in message.lower():
+    if not product_match and any(word in m for word in ['spicy', 'vegetarian', 'vegan', 'burger', 'pizza']):
+        score += NEGATIVE_FACTORS['dietary_conflict']
+    if "don't like" in m or "not interested" in m:
         score += NEGATIVE_FACTORS['rejection']
 
-    return max(0, min(100, score))  # Cap between 0 and 100
+    return max(0, min(100, score))
 
 def query_database(filters):
     conn = sqlite3.connect('foodiebot.db')
     c = conn.cursor()
     query = "SELECT product_id, name, price, spice_level, description, dietary_tags FROM products WHERE 1=1"
     params = []
+
     if 'category' in filters:
         query += " AND category = ?"
         params.append(filters['category'])
@@ -76,20 +90,28 @@ def query_database(filters):
     if 'dietary_tags' in filters:
         query += " AND dietary_tags LIKE ?"
         params.append(f'%{filters["dietary_tags"]}%')
+
+    # Context-aware dietary filtering
     if 'vegetarian' in filters.get('context', '').lower() or 'vegan' in filters.get('context', '').lower():
         query += " AND (dietary_tags LIKE ? OR dietary_tags LIKE ?)"
         params.extend(['%vegetarian%', '%vegan%'])
+
     query += " ORDER BY popularity_score DESC LIMIT 3"
     results = c.execute(query, params).fetchall()
     conn.close()
-    print(f"Query results: {results}")  # Debug database output
+
+    if not results:
+        print("[DEBUG] No DB matches with filters:", filters)
     return results
 
 def generate_response(user_message, context=""):
-    interest = calculate_interest_score(user_message)
-    filters = {'context': context}  
-    if 'spicy' in user_message.lower() or 'curry' in user_message.lower():
-        filters['spice_min'] = 5
+    # Step 1: Build filters from RULES
+    filters = {'context': context}
+    for keyword, rule in RULES.items():
+        if keyword in user_message.lower():
+            filters.update(rule)
+
+    # Step 2: Extract budget
     if 'under $' in user_message.lower():
         for word in user_message.lower().split():
             if word.startswith('$'):
@@ -98,30 +120,34 @@ def generate_response(user_message, context=""):
                     break
                 except ValueError:
                     pass
-    if 'vegetarian' in user_message.lower() or 'vegan' in user_message.lower():
-        filters['dietary_tags'] = 'vegetarian'
-    if 'burger' in user_message.lower():
-        filters['category'] = 'burger'  # Add burger category filter
 
+    # Step 3: Query DB
     results = query_database(filters)
     product_match = bool(results)
-    interest = calculate_interest_score(user_message, product_match)  # Recalculate with match status
+
+    # Step 4: Recalculate interest *after* DB results
+    interest = calculate_interest_score(user_message, product_match)
+
+    # Step 5: Build response
     if not results:
         product_info = "No matches found."
     else:
-        product_info = "\n".join([f"- {r[1]}: ${r[2]}, Spice: {r[3]}/10 - {r[4]} (Tags: {r[5]})" for r in results])
+        product_info = "\n".join(
+            [f"- {r[1]}: ${r[2]}, Spice {r[3]}/10 - {r[4]} (Tags: {r[5]})" for r in results]
+        )
+
     prompt = f"""
-    You are FoodieBot. Use context: {context}.
+    You are FoodieBot. Context: {context}.
     User: {user_message}.
-    Recommend ONLY from these exact database products: {product_info}.
-    If no matches, say exactly: "No matching products found in our database. What else can I help with?"
-    Do NOT suggest, mention, or invent any items not explicitly listed in the products above. Adhere strictly to the provided data only.
-    Respect the user's previous preferences (e.g., vegetarian) from the context and do NOT recommend conflicting items.
-    Keep natural dialogue, extract preferences, maintain memory, and recommend based on mood/diet/budget/spice level.
+    Recommend ONLY from these database products:
+    {product_info}
+
+    If no matches, say: "No matching products found in our database. What else can I help with?"
+    Never invent products. Respect previous preferences (vegetarian, vegan, budget).
     """
     response = model.generate_content(
         prompt,
-        generation_config={"temperature": 0.7, "max_output_tokens": 300}
+        generation_config={"temperature": 0.6, "max_output_tokens": 250}
     ).text
     return response, interest
 
