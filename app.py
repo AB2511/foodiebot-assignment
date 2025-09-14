@@ -6,28 +6,29 @@ import pandas as pd
 import uuid
 
 st.set_page_config(page_title="🍔 FoodieBot Chat & Analytics", layout="wide")
+st.title("🍔 FoodieBot Chat & Analytics")
 
-# session state
+# Session state
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []   # tuples (role, text)
+    st.session_state.chat_history = []   # list of (role, text)
 if "interest_scores" not in st.session_state:
     st.session_state.interest_scores = []
-if "dietary_mentions" not in st.session_state:
-    st.session_state.dietary_mentions = set()
 if "last_queries" not in st.session_state:
     st.session_state.last_queries = []
+if "dietary_mentions" not in st.session_state:
+    st.session_state.dietary_mentions = set()
 
-st.title("🍔 FoodieBot Chat & Analytics")
-left_col, right_col = st.columns([2, 1])
+# Layout
+left, right = st.columns([2, 1])
 
-with left_col:
-    st.subheader("Chat with FoodieBot")
+with left:
+    st.subheader("Chat")
     user_input = st.text_input("Type your message here:", key="user_input")
     if st.button("Send"):
         if user_input.strip():
-            response, interest = generate_response(user_input, context=" ".join([m for _, m in st.session_state.chat_history]))
+            response, interest = generate_response(user_input, context=" ".join([t for _, t in st.session_state.chat_history]))
             log_conversation(user_input, response, interest)
 
             st.session_state.chat_history.append(("You", user_input))
@@ -42,15 +43,16 @@ with left_col:
             if "spicy" in user_input.lower():
                 st.session_state.dietary_mentions.add("spicy")
 
-    # display chat
+    # Chat display (last 30 lines)
+    st.markdown("----")
     for role, text in st.session_state.chat_history[-30:]:
         if role == "You":
             st.markdown(f"**You:** {text}")
         else:
             st.markdown(f"**Bot:** {text}")
 
-with right_col:
-    st.header("Analytics")
+with right:
+    st.subheader("Analytics")
     if st.session_state.interest_scores:
         avg_interest = sum(st.session_state.interest_scores) / len(st.session_state.interest_scores)
         st.metric("Average Interest", f"{avg_interest:.2f}%")
@@ -58,40 +60,56 @@ with right_col:
     else:
         st.metric("Average Interest", "0.00%")
 
-    st.subheader("Dietary Mentions")
-    st.write(", ".join(sorted(st.session_state.dietary_mentions)) if st.session_state.dietary_mentions else "None")
+    st.write("**Dietary Mentions:**", ", ".join(sorted(st.session_state.dietary_mentions)) if st.session_state.dietary_mentions else "None")
 
     st.subheader("Database status")
     try:
         conn = sqlite3.connect("foodiebot.db")
         total = pd.read_sql_query("SELECT COUNT(*) AS total FROM products", conn)["total"].iloc[0]
+        category_counts = pd.read_sql_query("SELECT category, COUNT(*) as cnt FROM products GROUP BY category", conn)
         conn.close()
         st.write(f"Total Products: **{int(total)}**")
-    except Exception:
-        st.error("Database unavailable. Run setup_db.py to generate foodiebot.db")
+        st.dataframe(category_counts, height=180)
+    except Exception as e:
+        st.error("Database unavailable. Run setup_db.py to create foodiebot.db")
 
     st.subheader("Last queries")
     for q in st.session_state.last_queries[-6:][::-1]:
         st.write(q)
 
-    # preview last user search
-    st.subheader("Search Preview (last message)")
+    st.subheader("Search preview (last user message)")
     if st.session_state.chat_history:
         last_user = ""
-        for r, t in reversed(st.session_state.chat_history):
-            if r == "You":
-                last_user = t
+        for role, txt in reversed(st.session_state.chat_history):
+            if role == "You":
+                last_user = txt
                 break
         if last_user:
-            preview = query_database({"keyword": last_user})
-            if preview:
-                for p in preview[:6]:
+            preview = query_database({"keyword_tokens": None, "category": None})
+            # Build a meaningful preview: call query_database with tokenization via our helper generate_response logic:
+            # Simpler approach: just call generate_response and display the bot's preview text
+            preview_results = None
+            try:
+                # try to get direct DB preview by reusing generate_response filters indirectly:
+                from chat_engine import _normalize_text, _tokenize_and_filter, RULES as CHAT_RULES
+                clean = _normalize_text(last_user)
+                tokens = _tokenize_and_filter(clean)
+                filters = {"keyword_tokens": tokens, "context": ""}
+                for k, rule in CHAT_RULES.items():
+                    if k in clean:
+                        filters.update(rule)
+                preview_results = query_database(filters)
+            except Exception:
+                preview_results = None
+
+            if preview_results:
+                for p in preview_results[:6]:
                     st.markdown(f"**{p[1]}** — {p[2]} — ${p[3]:.2f} — Spice {p[4]}/10")
                     if p[5]:
-                        st.caption(p[5][:200] + ("..." if len(p[5]) > 200 else ""))
+                        st.caption(p[5][:150] + ("..." if len(p[5]) > 150 else ""))
             else:
                 st.info("No matching products found in database.")
 
 st.markdown("---")
-st.markdown("**Quick test queries**:")
-st.markdown("- `show me burgers`  \n- `I want vegan wraps`  \n- `Any spicy vegetarian curry under $8?`  \n- `Less than 10 dollars pasta`  \n- `extra spicy wrap`  \n- `I will take the Spicy Korean Fried Cauliflower`")
+st.markdown("**Quick test queries:**")
+st.markdown("- `show me burgers`  \n- `burgers`  \n- `I want vegan wraps`  \n- `Any spicy vegetarian curry under $8?`  \n- `Less than 10 dollars pasta`  \n- `extra spicy wrap`  \n- `I will take the Spicy Korean Fried Cauliflower`")
