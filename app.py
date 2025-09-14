@@ -1,68 +1,70 @@
 import streamlit as st
-from chat_engine import generate_response, query_database
-import sqlite3
+from chat_engine import generate_response, log_conversation, query_database
 import pandas as pd
-import matplotlib.pyplot as plt
-import uuid
+import sqlite3
 
-# ---------- Streamlit Setup ----------
+# ----------------- Page Config -----------------
 st.set_page_config(page_title="🍔 FoodieBot Chat & Analytics", layout="wide")
 st.title("🍔 FoodieBot Chat & Analytics")
 
-# ---------- Session State ----------
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []  # list of tuples (role, message)
-if 'interest_scores' not in st.session_state:
+# ----------------- Session State -----------------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+if "interest_scores" not in st.session_state:
     st.session_state.interest_scores = []
 
-# ---------- User Input ----------
-user_input = st.text_input("Chat with FoodieBot:", "")
-if st.button("Send") and user_input.strip():
-    # Generate bot response
-    response = generate_response(user_input)
-    
-    # Log chat in session
+if "context" not in st.session_state:
+    st.session_state.context = ""
+
+# ----------------- Chat Input -----------------
+user_input = st.text_input("Type your message here:")
+
+if user_input.strip():
+    # Generate response
+    response, interest = generate_response(user_input, st.session_state.context)
+
+    # Log conversation to DB
+    log_conversation(user_input, response, interest)
+
+    # Save in session
     st.session_state.chat_history.append(("User", user_input))
     st.session_state.chat_history.append(("Bot", response))
-    
-    # Reset input box
-    st.experimental_rerun()
+    st.session_state.interest_scores.append(interest)
+    st.session_state.context += f"User: {user_input}\nBot: {response}\n"
 
-# ---------- Chat Display ----------
-st.subheader("💬 Conversation")
+# ----------------- Display Chat -----------------
+st.subheader("💬 Chat")
 for role, msg in st.session_state.chat_history:
     if role == "User":
         st.markdown(f"**You:** {msg}")
     else:
         st.markdown(f"**Bot:** {msg}")
 
-# ---------- Sidebar: Analytics & DB ----------
+# ----------------- Sidebar Analytics -----------------
 st.sidebar.title("📊 Analytics Dashboard")
 
-# Interest Score Progression
-if st.session_state.chat_history:
-    # Calculate dummy interest: here just a placeholder (you can compute real scores later)
-    st.sidebar.subheader("Interest Progression")
-    interest_scores = [10 if role=="Bot" else 0 for role, _ in st.session_state.chat_history]
-    st.sidebar.line_chart(interest_scores)
-    avg_interest = sum(interest_scores)/len(interest_scores)
+# Interest progression graph
+st.sidebar.subheader("Interest Progression")
+if st.session_state.interest_scores:
+    st.sidebar.line_chart(st.session_state.interest_scores)
+    avg_interest = sum(st.session_state.interest_scores) / len(st.session_state.interest_scores)
     st.sidebar.metric("Average Interest", f"{avg_interest:.2f}%")
 else:
     st.sidebar.metric("Average Interest", "0.00%")
 
 # Unique dietary mentions
-dietary_set = set()
-for role, msg in st.session_state.chat_history:
+st.sidebar.subheader("Unique Dietary Mentions")
+dietary_mentions = set()
+for msg in [m for r, m in st.session_state.chat_history if r=="User"]:
     m = msg.lower()
-    for tag in ["vegetarian", "vegan", "spicy", "curry", "burger", "pizza", "wrap", "salad"]:
-        if tag in m:
-            dietary_set.add(tag)
-st.sidebar.write(f"Unique Dietary Mentions: {', '.join(dietary_set) if dietary_set else 'None'}")
+    for keyword in ['vegetarian', 'vegan', 'spicy', 'curry', 'burger', 'pizza', 'wrap', 'salad']:
+        if keyword in m:
+            dietary_mentions.add(keyword)
+st.sidebar.write(", ".join(dietary_mentions) if dietary_mentions else "None")
 
-# Database Status
-st.sidebar.title("📦 Database Status")
+# ----------------- Database Status -----------------
+st.sidebar.subheader("📦 Database Status")
 try:
     conn = sqlite3.connect('foodiebot.db')
     products_df = pd.read_sql_query("SELECT category, COUNT(*) as count FROM products GROUP BY category", conn)
@@ -70,12 +72,25 @@ try:
     conn.close()
     st.sidebar.write(f"Total Products: **{total_products}**")
     st.sidebar.dataframe(products_df, height=200)
-except sqlite3.Error as e:
-    st.sidebar.error(f"Error loading products: {e}. Make sure 'foodiebot.db' exists.")
+except Exception as e:
+    st.sidebar.error(f"Database error: {e}")
 
-# Last 5 User Queries
+# ----------------- Last 5 Queries -----------------
 st.sidebar.subheader("Last 5 Queries")
-user_msgs = [msg for role, msg in st.session_state.chat_history if role=="User"]
-if user_msgs:
-    for msg in user_msgs[-5:]:
-        st.sidebar.write(msg)
+if st.session_state.chat_history:
+    last5 = [f"{r}: {m}" for r, m in st.session_state.chat_history[-10:]]
+    st.sidebar.write("\n".join(last5))
+
+# ----------------- Optional: Display Products -----------------
+st.sidebar.subheader("Search Preview")
+if user_input.strip():
+    filters = {'keyword': user_input, 'context': st.session_state.context}
+    products_list = query_database(filters)
+    if products_list:
+        for prod in products_list:
+            st.sidebar.markdown(f"**{prod[1]} ({prod[2]})** — ${prod[3]}, Spice {prod[4]}/10")
+            st.sidebar.markdown(f"{prod[5]}")
+            st.sidebar.markdown(f"*Tags:* {prod[6]}")
+            st.sidebar.markdown("---")
+    else:
+        st.sidebar.info("No matching products found in database.")
